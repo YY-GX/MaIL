@@ -37,7 +37,8 @@ observation:
         - joint_states
       rgb:
         - agentview_rgb
-        - eye_in_hand_rgb
+# yy: I commented this
+#        - eye_in_hand_rgb
       depth: []
       scan: []
     goal:
