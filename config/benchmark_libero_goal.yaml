@@ -66,7 +66,10 @@ hydra:
     chdir: True
   sweep:
     dir: ${log_dir}/sweeps/${agent_name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
-    subdir: ${hydra.job.override_dirname}
+    subdir: ""
+# yy: I modify this
+#    subdir: ${hydra.job.override_dirname}
+
 #  only for our cluster
 #  launcher:
 #    timeout_min: 1200
