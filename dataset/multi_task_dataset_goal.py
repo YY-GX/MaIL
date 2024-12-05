@@ -93,7 +93,7 @@ class MultiTaskDataset(TrajectoryDataset):
         # task_emb_dir = "/home/david/Student/Wangqian/OCIL/task_embeddings/"
         # task_emb_dir = "/home/i53/student/wang/OCIL/task_embeddings/"
         # task_emb_dir = "/home/hk-project-robolear/ll6323/project/OCIL/task_embeddings/"
-        task_emb_dir = "/mnt/arc/yygx/pkgs_baselines/MaIL/task_embeddings "
+        task_emb_dir = "/mnt/arc/yygx/pkgs_baselines/MaIL/task_embeddings/"
 
         with open(task_emb_dir + task_suite + ".pkl", 'rb') as f:
             tasks = pickle.load(f)
