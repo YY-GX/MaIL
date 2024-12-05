@@ -49,7 +49,9 @@ observation:
 #dataset location
 #dataset_path: /home/temp_store/wang/${task_suite}
 # cluster path:
-dataset_path: /hkfs/work/workspace/scratch/ll6323-david_dataset/data/libero/${task_suite}
+#dataset_path: /hkfs/work/workspace/scratch/ll6323-david_dataset/data/libero/${task_suite}
+# yy: I modified this
+dataset_path: /mnt/arc/yygx/pkgs_baselines/LIBERO/libero/datasets/${task_suite}
 
 # insert your own wandb here
 wandb:
