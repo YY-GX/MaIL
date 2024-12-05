@@ -60,7 +60,7 @@ def main(cfg: DictConfig) -> None:
 
         agent.train_vision_agent()
 
-        if num_epoch in [39, 49, 59]:
+        if num_epoch in [1, 39, 49, 59]:
 
             env_sim.test_agent(agent, assign_cpus, epoch=num_epoch)
     agent.store_model_weights(agent.working_dir, sv_name=agent.last_model_name)
