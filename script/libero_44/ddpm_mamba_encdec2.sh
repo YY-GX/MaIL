@@ -10,4 +10,6 @@ python run_benchmark.py  --config-name=benchmark_libero_goal \
             mamba_decoder_cfg.d_state=8 \
             enc_conv=2 \
             dec_conv=2 \
-            seed=10000
+            seed=10000 \
+            wandb.entity=yygx \
+            wandb.project=mail
