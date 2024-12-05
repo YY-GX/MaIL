@@ -110,7 +110,9 @@ class MultiTaskSim(BaseSim):
             agent.reset()
             env.seed(self.seed)
             env.reset()
-            obs = env.set_init_state(init_state=init_states[context_ind[i]])
+            # obs = env.set_init_state(init_state=init_states[context_ind[i]])
+            # YY: I add this
+            obs = env.set_init_state(init_state=init_states[0])
 
             # dummy actions all zeros for initial physics simulation
             dummy = np.zeros(7)
