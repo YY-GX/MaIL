@@ -124,7 +124,8 @@ class DiffusionAgent(BaseAgent):
             diffusion_kde: bool = False,
             diffusion_kde_samples: int = 100,
             goal_conditioned: bool = False,
-            eval_every_n_epochs: int = 50
+            eval_every_n_epochs: int = 50,
+            task_idx = None
     ):
         # super().__init__(model, trainset=trainset, valset=valset, train_batch_size=train_batch_size,
         #                  val_batch_size=val_batch_size, num_workers=num_workers, device=device,
@@ -142,11 +143,7 @@ class DiffusionAgent(BaseAgent):
         self.num_workers_ = num_workers
 
         benchmark = get_benchmark(trainset.task_suite)(trainset.task_order_index)
-        n_manip_tasks = benchmark.n_tasks
-        self.trainset_ls = []
-        for task_idx in range(n_manip_tasks):
-            trainset_separate = hydra.utils.instantiate(trainset, task_idx=task_idx, benchmark=benchmark)
-            self.trainset_ls.append(trainset_separate)
+        self.trainset = hydra.utils.instantiate(trainset, task_idx=task_idx, benchmark=benchmark)
 
         # yy: equal to super()
         self.scaler = ActionScaler(self.trainset.get_all_actions(), scale_data, device)
@@ -265,7 +262,7 @@ class DiffusionAgent(BaseAgent):
         log.info("Training done!")
 
     def train_single_vision_agent(self, task_idx):
-        trainset = self.trainset_ls[task_idx]
+        trainset = self.trainset
 
         self.train_dataloader = torch.utils.data.DataLoader(
             trainset,

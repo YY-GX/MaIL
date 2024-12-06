@@ -54,7 +54,7 @@ def main(cfg: DictConfig) -> None:
         config=wandb.config
     )
 
-    agent = hydra.utils.instantiate(cfg.agents)
+
     # env_sim = hydra.utils.instantiate(cfg.simulation)
 
     job_num = hydra.core.hydra_config.HydraConfig.get().job.num
@@ -68,14 +68,10 @@ def main(cfg: DictConfig) -> None:
     n_manip_tasks = benchmark.n_tasks
 
     for task_idx in range(n_manip_tasks):
-        for num_epoch in tqdm(range(agent.epoch)):
-
+        agent = hydra.utils.instantiate(cfg.agents, task_idx=task_idx)
+        for _ in tqdm(range(agent.epoch)):
             agent.train_single_vision_agent(task_idx=task_idx)
 
-            # if num_epoch in [1, 39, 49, 59]:
-            # if num_epoch in [1, 10, 19]:
-            #     # TODO: change test_agent to adapt to single task
-            #     env_sim.test_agent(agent, assign_cpus, epoch=num_epoch)
         agent.store_model_weights(agent.working_dir, sv_name=f"{agent.last_model_name}_task_idx_{task_idx}")
 
     log.info("done")
