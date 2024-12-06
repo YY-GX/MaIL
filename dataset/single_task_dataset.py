@@ -12,6 +12,7 @@ import imgaug.parameters as iap
 from imgaug import augmenters as iaa
 
 
+
 def get_max_data_len(data_directory: os.PathLike):
     if os.path.exists(data_directory):
         data_dir = data_directory
@@ -38,9 +39,12 @@ def get_max_data_len(data_directory: os.PathLike):
 
 
 """ for the policy need: agentview, eye_in_hand """
-class MultiTaskDataset(TrajectoryDataset):
+# default: no wrist camera view
+class SingleTaskDataset(TrajectoryDataset):
     def __init__(
             self,
+            task_idx,
+            benchmark,
             data_directory: os.PathLike,
             task_suite,
             # data='train',
@@ -57,7 +61,7 @@ class MultiTaskDataset(TrajectoryDataset):
             window_size: int = 1,
             num_data: int = 10,
             data_aug=False,
-            aug_factor=0.02
+            aug_factor=0.02,
     ):
         super().__init__(
             data_directory=data_directory,
@@ -68,16 +72,23 @@ class MultiTaskDataset(TrajectoryDataset):
             window_size=window_size
         )
 
+        self.task_idx = task_idx
+        task_name = benchmark.get_task_names()[self.task_idx]
+        demo_file_name = f"{task_name}_demo.hdf5"
+
         logging.info("Loading Libero Dataset")
 
         self.data_aug = data_aug
         self.aug_factor = aug_factor
 
         self.obs_keys = obs_keys  # low_dim || rgb
-        logging.info("The dataset is {}".format(self.obs_keys))  #show low_dim or rgb
+        logging.info("The dataset is {}".format(self.obs_keys))  # show low_dim or rgb
 
-        self.data_dir = [os.path.join(data_directory, file)
-                         for file in os.listdir(data_directory) if file.endswith('.hdf5')]
+        # self.data_dir = [os.path.join(data_directory, file)
+        #                  for file in os.listdir(data_directory) if file.endswith('.hdf5')]
+
+        self.data_dir = [os.path.join(data_directory, demo_file_name)]
+
         # self.data_dir.sort()
         # if len(self.data_dir) > 20:
         #     self.data_dir = self.data_dir[:30]
@@ -104,7 +115,7 @@ class MultiTaskDataset(TrajectoryDataset):
         actions = []
         masks = []
         agentview_rgb = []
-        eye_in_hand_rgb = []
+        # eye_in_hand_rgb = []
 
         # goal_rgbs = []
 
@@ -151,13 +162,13 @@ class MultiTaskDataset(TrajectoryDataset):
                 # goal_view = demo['obs']['agentview_rgb'][-1:]
 
                 agent_view = demo['obs']['agentview_rgb'][:]
-                eye_in_hand = demo['obs']['eye_in_hand_rgb'][:]
+                # eye_in_hand = demo['obs']['eye_in_hand_rgb'][:]
 
                 actions.append(zero_actions)
                 masks.append(zero_mask)
 
                 agentview_rgb.append(agent_view)
-                eye_in_hand_rgb.append(eye_in_hand)
+                # eye_in_hand_rgb.append(eye_in_hand)
 
                 data_embs.append(task_emb)
 
@@ -172,7 +183,7 @@ class MultiTaskDataset(TrajectoryDataset):
         # self.eye_in_hand_rgb = torch.from_numpy(np.concatenate(eye_in_hand_rgb)).to(device)
 
         self.agentview_rgb = agentview_rgb
-        self.eye_in_hand_rgb = eye_in_hand_rgb
+        # self.eye_in_hand_rgb = eye_in_hand_rgb
 
         self.tasks = tasks
         self.data_embs = data_embs
@@ -237,7 +248,7 @@ class MultiTaskDataset(TrajectoryDataset):
         task_emb = self.data_embs[i]
 
         agentview_rgb = self.agentview_rgb[i][start:end]
-        eye_in_hand_rgb = self.eye_in_hand_rgb[i][start:end]
+        # eye_in_hand_rgb = self.eye_in_hand_rgb[i][start:end]
 
         if self.data_aug is True:
             # cv2.imshow('ori', agentview_rgb[0])
@@ -259,9 +270,9 @@ class MultiTaskDataset(TrajectoryDataset):
         task_emb = task_emb.to(self.device).float()
 
         agentview_rgb = torch.from_numpy(agentview_rgb).to(self.device).float().permute(0, 3, 1, 2) / 255.
-        eye_in_hand_rgb = torch.from_numpy(eye_in_hand_rgb).to(self.device).float().permute(0, 3, 1, 2) / 255.
+        # eye_in_hand_rgb = torch.from_numpy(eye_in_hand_rgb).to(self.device).float().permute(0, 3, 1, 2) / 255.
 
         act = self.actions[i, start:end]
         mask = self.masks[i, start:end]
 
-        return agentview_rgb, eye_in_hand_rgb, act, task_emb
+        return agentview_rgb, None, act, task_emb

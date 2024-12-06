@@ -12,6 +12,14 @@ from tqdm import tqdm
 
 from agents.utils import sim_framework_path
 
+current_working_directory = os.getcwd()
+os.chdir(os.environ['PYTHONPATH'])
+from libero.libero.envs import *
+from libero.libero import benchmark
+from libero.libero.envs import OffScreenRenderEnv
+from libero.libero.benchmark import get_benchmark
+os.chdir(current_working_directory)
+
 log = logging.getLogger(__name__)
 
 print(torch.cuda.is_available())
@@ -47,7 +55,7 @@ def main(cfg: DictConfig) -> None:
     )
 
     agent = hydra.utils.instantiate(cfg.agents)
-    env_sim = hydra.utils.instantiate(cfg.simulation)
+    # env_sim = hydra.utils.instantiate(cfg.simulation)
 
     job_num = hydra.core.hydra_config.HydraConfig.get().job.num
 
@@ -56,16 +64,21 @@ def main(cfg: DictConfig) -> None:
     current_num = int(job_num % 4)
     assign_cpus = cpu_set[current_num * cfg.n_cores:current_num * cfg.n_cores + cfg.n_cores]
 
-    for num_epoch in tqdm(range(agent.epoch)):
+    benchmark = get_benchmark(cfg.task_suite)(cfg.task_order_index)
+    n_manip_tasks = benchmark.n_tasks
 
-        agent.train_vision_agent()
+    for task_idx in range(n_manip_tasks):
+        for num_epoch in tqdm(range(agent.epoch)):
 
-        # if num_epoch in [1, 39, 49, 59]:
-        if num_epoch in [1, 10, 19]:
-            env_sim.test_agent(agent, assign_cpus, epoch=num_epoch)
-    agent.store_model_weights(agent.working_dir, sv_name=agent.last_model_name)
+            agent.train_single_vision_agent(task_idx=task_idx)
+
+            # if num_epoch in [1, 39, 49, 59]:
+            # if num_epoch in [1, 10, 19]:
+            #     # TODO: change test_agent to adapt to single task
+            #     env_sim.test_agent(agent, assign_cpus, epoch=num_epoch)
+        agent.store_model_weights(agent.working_dir, sv_name=f"{agent.last_model_name}_task_idx_{task_idx}")
+
     log.info("done")
-
     wandb.finish()
 
 
