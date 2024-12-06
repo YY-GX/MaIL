@@ -138,8 +138,8 @@ class DiffusionAgent(BaseAgent):
         n_manip_tasks = benchmark.n_tasks
         self.trainset_ls = []
         for task_idx in range(n_manip_tasks):
-            trainset['task_idx'] = task_idx
-            trainset['benchmark'] = benchmark
+            trainset.task_idx = task_idx
+            trainset.benchmark = benchmark
             trainset_separate = hydra.utils.instantiate(trainset)
             self.trainset_ls.append(trainset_separate)
 
