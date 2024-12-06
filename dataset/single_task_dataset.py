@@ -74,6 +74,8 @@ class SingleTaskDataset(TrajectoryDataset):
             window_size=window_size
         )
 
+        print(f">> task_idx: {task_idx}")
+
         if task_idx:
             self.init_constructor(
                 data_directory,
