@@ -45,7 +45,7 @@ class DiffusionPolicy(nn.Module):
 
         self.model = hydra.utils.instantiate(model).to(device)
 
-        self.linear = nn.Linear(512, 256)
+        self.linear = nn.Linear(512, 128)
 
     def forward(self, inputs, goal, action=None, if_train=False, if_return_obs=False):
         # encode state and visual inputs
