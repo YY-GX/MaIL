@@ -109,7 +109,6 @@ def main() -> None:
     for task_idx in range(n_manip_tasks):
         task_name = benchmark.get_task_names()[task_idx]
         print(f">> Task Name: {task_name}")
-        print(cfg.agents)
         agent = hydra.utils.instantiate(cfg.agents, task_idx=task_idx)
         # Load checkpoints
         agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{task_idx}.pth")
