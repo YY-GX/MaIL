@@ -16,7 +16,7 @@ import einops
 
 from agents.base_agent import BaseAgent
 from agents.models.oc_ddpm.ema import ExponentialMovingAverage
-
+from agents.utils import Scaler, ActionScaler
 
 
 current_working_directory = os.getcwd()
@@ -126,9 +126,16 @@ class DiffusionAgent(BaseAgent):
             goal_conditioned: bool = False,
             eval_every_n_epochs: int = 50
     ):
-        super().__init__(model, trainset=trainset, valset=valset, train_batch_size=train_batch_size,
-                         val_batch_size=val_batch_size, num_workers=num_workers, device=device,
-                         epoch=epoch, scale_data=scale_data, eval_every_n_epochs=eval_every_n_epochs)
+        # super().__init__(model, trainset=trainset, valset=valset, train_batch_size=train_batch_size,
+        #                  val_batch_size=val_batch_size, num_workers=num_workers, device=device,
+        #                  epoch=epoch, scale_data=scale_data, eval_every_n_epochs=eval_every_n_epochs)
+
+        # yy: equal to super()
+        self.model = hydra.utils.instantiate(model).to(device)
+        self.eval_every_n_epochs = eval_every_n_epochs
+        self.epoch = epoch
+        self.device = device
+        self.working_dir = os.getcwd()
 
         # yy: my customized train set
         self.train_batch_size_ = train_batch_size
@@ -141,7 +148,15 @@ class DiffusionAgent(BaseAgent):
             trainset_separate = hydra.utils.instantiate(trainset, task_idx=task_idx, benchmark=benchmark)
             self.trainset_ls.append(trainset_separate)
 
-
+        # yy: equal to super()
+        self.scaler = ActionScaler(self.trainset.get_all_actions(), scale_data, device)
+        total_params = sum(p.numel() for p in self.model.get_params())
+        wandb.log(
+            {
+                "model parameters": total_params
+            }
+        )
+        log.info("The model has a total amount of {} parameters".format(total_params))
 
 
         # Define the bounds for the sampler class
