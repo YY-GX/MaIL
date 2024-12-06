@@ -71,7 +71,7 @@ def eval(cfg, task_embs, task_idx, agent, seed):
 
 
     with torch.no_grad():
-        for j in range(cfg.max_step_per_episode):
+        for j in range(cfg.simulation.max_step_per_episode):
             agentview_rgb = obs["agentview_image"]
 
             if cfg.data_aug:
