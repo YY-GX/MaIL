@@ -512,4 +512,4 @@ class DiffusionAgent(BaseAgent):
         torch.save(self.model.state_dict(), os.path.join(store_path, sv_name))
         if self.use_ema:
             self.ema_helper.restore(self.model.parameters())
-        torch.save(self.model.state_dict(), os.path.join(store_path, "non_ema_model_state_dict.pth"))
+        torch.save(self.model.state_dict(), os.path.join(store_path, f"non_ema_model_state_dict_{sv_name}.pth"))

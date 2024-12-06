@@ -72,7 +72,13 @@ def main(cfg: DictConfig) -> None:
         for _ in tqdm(range(agent.epoch)):
             agent.train_single_vision_agent()
 
-        agent.store_model_weights(agent.working_dir, sv_name=f"{agent.last_model_name}_task_idx_{task_idx}")
+        agent.store_model_weights("checkpoints", sv_name=f"last_ddpm_task_idx_{task_idx}")
+        print("===================== SAVING CHECKPOINTS =====================")
+        print(f"Model saved for task {benchmark.get_task_names()[task_idx]} "
+              f"at ./checkpoints/last_ddpm_task_idx_{task_idx}")
+
+        print("==============================================================")
+        exit(0)
 
     log.info("done")
     wandb.finish()
