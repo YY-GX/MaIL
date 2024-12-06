@@ -95,6 +95,10 @@ def eval(cfg, benchmark, task_embs, task_idx, agent, seed):
 
 def main() -> None:
     args = parse_args()
+
+    def add_resolver(x, y):
+        return x + y
+    OmegaConf.register_new_resolver("add", add_resolver)
     cfg = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
 
     with open(f"{args.task_emb_dir}/{cfg.task_suite}.pkl", 'rb') as f:
