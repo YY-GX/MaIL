@@ -72,10 +72,10 @@ def eval(cfg, task_embs, task_idx, agent, seed):
 
     with torch.no_grad():
         for j in range(cfg.simulation.max_step_per_episode):
-            agentview_rgb = obs["agentview_image"]
+            agentview_rgb = [each_obs["agentview_image"] for each_obs in obs]
 
             if cfg.data_aug:
-                agentview_rgb = aug(image=agentview_rgb)
+                agentview_rgb = [aug(image=rgb) for rgb in agentview_rgb]
 
             all_actions = np.zeros(7)
             for each_agentview_rgb in agentview_rgb:
