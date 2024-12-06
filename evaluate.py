@@ -8,6 +8,7 @@ from imgaug import augmenters as iaa
 import argparse
 from omegaconf import OmegaConf
 import pickle
+import wandb
 
 current_working_directory = os.getcwd()
 os.chdir(os.environ['PYTHONPATH'])
@@ -101,6 +102,16 @@ def main() -> None:
     OmegaConf.register_new_resolver("add", add_resolver)
     cfg = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
 
+    wandb.config = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
+
+    wandb.init(
+        project=cfg.wandb.project,
+        entity=cfg.wandb.entity,
+        group=cfg.group,
+        mode="online",
+        config=wandb.config
+    )
+
     with open(f"{args.task_emb_dir}/{cfg.task_suite}.pkl", 'rb') as f:
         task_embs = pickle.load(f)
 
@@ -113,7 +124,6 @@ def main() -> None:
         task_name = benchmark.get_task_names()[task_idx]
         print(f">> Task Name: {task_name}")
         OmegaConf.resolve(cfg.agents)
-        print(cfg.agents)
         agent = hydra.utils.instantiate(cfg.agents, task_idx=task_idx)
         # Load checkpoints
         agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{task_idx}.pth")
