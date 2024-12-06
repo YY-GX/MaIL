@@ -96,6 +96,7 @@ def eval(cfg, benchmark, task_embs, task_idx, agent, seed):
 def main() -> None:
     args = parse_args()
     cfg = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
+    OmegaConf.resolve(cfg)
 
     with open(f"{args.task_emb_dir}/{cfg.task_suite}.pkl", 'rb') as f:
         task_embs = pickle.load(f)
