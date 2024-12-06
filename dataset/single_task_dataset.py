@@ -76,7 +76,7 @@ class SingleTaskDataset(TrajectoryDataset):
 
         print(f">> task_idx: {task_idx}")
 
-        if task_idx:
+        if task_idx is not None:
             self.init_constructor(
                 data_directory,
                 task_suite,
