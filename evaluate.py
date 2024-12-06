@@ -59,6 +59,7 @@ def eval(cfg, task_embs, task_idx, agent, seed):
     obs = env.set_init_state(init_state=init_states[0])
 
     num_success = 0
+    cfg.num_episode = cfg.simulation.num_episode
     dones = [False] * cfg.num_episode
 
     dummy = np.zeros((cfg.num_episode, 7))
