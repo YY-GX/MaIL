@@ -97,7 +97,7 @@ class SingleTaskDataset(TrajectoryDataset):
                 task_order_index,
             )
         else:
-            self.slices = []
+            self.slices = [1]
 
 
 
