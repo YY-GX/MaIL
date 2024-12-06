@@ -73,7 +73,55 @@ class SingleTaskDataset(TrajectoryDataset):
             max_len_data=max_len_data,
             window_size=window_size
         )
+        if task_idx:
+            self.init_constructor(
+                data_directory,
+                task_suite,
+                obs_keys,
+                obs_modalities,
+                dataset_keys,
+                filter_by_attribute,
+                padding,
+                device,
+                obs_dim,
+                action_dim,
+                state_dim,
+                max_len_data,
+                window_size,
+                num_data,
+                data_aug,
+                aug_factor,
+                task_idx,
+                benchmark,
+                task_order_index,
+            )
+        else:
+            pass
 
+
+
+    def init_constructor(self,
+                         data_directory: os.PathLike,
+                         task_suite,
+                         obs_keys,  # low_dim or rgb
+                         obs_modalities,
+                         dataset_keys=None,  # [actions, dones, obs, rewards, states]
+                         filter_by_attribute=None,
+                         padding=True,
+                         device="cpu",
+                         obs_dim: int = 32,
+                         action_dim: int = 7,
+                         state_dim: int = 45,
+                         max_len_data: int = 136,
+                         window_size: int = 1,
+                         num_data: int = 10,
+                         data_aug=False,
+                         aug_factor=0.02,
+
+                         task_idx=None,
+                         benchmark=None,
+                         task_order_index=None,
+    ):
         self.task_idx = task_idx
         task_name = benchmark.get_task_names()[self.task_idx]
         demo_file_name = f"{task_name}_demo.hdf5"
