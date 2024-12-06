@@ -166,7 +166,7 @@ train_batch_size: 256
 val_batch_size: 256
 num_workers: 2
 device: 'cuda'
-epoch: 20
+epoch: 100
 eval_every_n_epochs: 50
 scale_data: True
 
