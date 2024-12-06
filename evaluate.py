@@ -9,6 +9,7 @@ import argparse
 from omegaconf import OmegaConf
 import pickle
 import wandb
+import datetime
 
 current_working_directory = os.getcwd()
 os.chdir(os.environ['PYTHONPATH'])
@@ -99,7 +100,10 @@ def main() -> None:
 
     def add_resolver(x, y):
         return x + y
+    def now(format: str):
+        return datetime.now().strftime(format)
     OmegaConf.register_new_resolver("add", add_resolver)
+    OmegaConf.register_new_resolver("now", now)
     cfg = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
 
     wandb.config = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
