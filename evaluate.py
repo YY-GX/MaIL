@@ -50,7 +50,7 @@ def eval(cfg, task_embs, task_idx, agent, seed):
     }
 
     env = SubprocVectorEnv(
-        [lambda: OffScreenRenderEnv(**env_args) for _ in range(cfg.num_episode)]
+        [lambda: OffScreenRenderEnv(**env_args) for _ in range(cfg.simulation.num_episode)]
     )
 
     agent.reset()
@@ -59,10 +59,9 @@ def eval(cfg, task_embs, task_idx, agent, seed):
     obs = env.set_init_state(init_state=init_states[0])
 
     num_success = 0
-    cfg.num_episode = cfg.simulation.num_episode
-    dones = [False] * cfg.num_episode
+    dones = [False] * cfg.simulation.num_episode
 
-    dummy = np.zeros((cfg.num_episode, 7))
+    dummy = np.zeros((cfg.simulation.num_episode, 7))
     dummy[:, -1] = -1.0  # set the last action to -1 to open the gripper
     for _ in range(5):
         obs, _, _, _ = env.step(dummy)
@@ -84,16 +83,16 @@ def eval(cfg, task_embs, task_idx, agent, seed):
             obs, r, done, _ = env.step(all_actions)
 
             # check whether succeed
-            for k in range(cfg.num_episode):
+            for k in range(cfg.simulation.num_episode):
                 dones[k] = dones[k] or done[k]
             if all(dones):
                 break
-    for k in range(cfg.num_episode):
+    for k in range(cfg.simulation.num_episode):
         num_success += int(dones[k])
 
     env.close()
 
-    return num_success / cfg.num_episode
+    return num_success / cfg.simulation.num_episode
 
 
 def main() -> None:
