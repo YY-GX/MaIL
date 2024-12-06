@@ -121,6 +121,5 @@ def main() -> None:
     np.save(args.model_folder_path, np.array(tasks_succ_ls))
 
 
-
 if __name__ == "__main__":
     main()
