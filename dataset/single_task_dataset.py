@@ -45,6 +45,7 @@ class SingleTaskDataset(TrajectoryDataset):
             self,
             task_idx,
             benchmark,
+            task_order_index,
             data_directory: os.PathLike,
             task_suite,
             # data='train',
