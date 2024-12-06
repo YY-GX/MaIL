@@ -1,5 +1,5 @@
-python run_benchmark.py  --config-name=benchmark_libero_goal \
-            --multirun agents=goal_ddpm_mamba_encdec \
+python run_benchmark_separate.py  --config-name=benchmark_libero_separate \
+            --multirun agents=goal_ddpm_mamba_encdec_separate \
             agent_name=ddpm_mamba_cross \
             task_suite=libero_90 \
             group=libero_90_ddpm_mamba_cross_goal \
