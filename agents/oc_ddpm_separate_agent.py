@@ -143,6 +143,7 @@ class DiffusionAgent(BaseAgent):
         self.num_workers_ = num_workers
 
         benchmark = get_benchmark(trainset.task_suite)(trainset.task_order_index)
+        print(f"task_idx: {task_idx}")
         self.trainset = hydra.utils.instantiate(trainset, task_idx=task_idx, benchmark=benchmark)
 
         # yy: equal to super()
@@ -261,7 +262,7 @@ class DiffusionAgent(BaseAgent):
 
         log.info("Training done!")
 
-    def train_single_vision_agent(self, task_idx):
+    def train_single_vision_agent(self):
         trainset = self.trainset
 
         self.train_dataloader = torch.utils.data.DataLoader(

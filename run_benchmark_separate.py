@@ -70,7 +70,7 @@ def main(cfg: DictConfig) -> None:
     for task_idx in range(n_manip_tasks):
         agent = hydra.utils.instantiate(cfg.agents, task_idx=task_idx)
         for _ in tqdm(range(agent.epoch)):
-            agent.train_single_vision_agent(task_idx=task_idx)
+            agent.train_single_vision_agent()
 
         agent.store_model_weights(agent.working_dir, sv_name=f"{agent.last_model_name}_task_idx_{task_idx}")
 
