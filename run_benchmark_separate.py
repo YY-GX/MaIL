@@ -68,17 +68,20 @@ def main(cfg: DictConfig) -> None:
     n_manip_tasks = benchmark.n_tasks
 
     for task_idx in range(n_manip_tasks):
+        task_name = benchmark.get_task_names()[task_idx]
+        print("===================== Start Training =====================")
+        print(f"Start training task: {task_name}")
+        print("==============================================================")
         agent = hydra.utils.instantiate(cfg.agents, task_idx=task_idx)
         for _ in tqdm(range(agent.epoch)):
             agent.train_single_vision_agent()
 
-        agent.store_model_weights("checkpoints", sv_name=f"last_ddpm_task_idx_{task_idx}")
+        agent.store_model_weights("/mnt/arc/yygx/pkgs_baselines/MaIL/", sv_name=f"last_ddpm_task_idx_{task_idx}")
         print("===================== SAVING CHECKPOINTS =====================")
-        print(f"Model saved for task {benchmark.get_task_names()[task_idx]} "
-              f"at ./checkpoints/last_ddpm_task_idx_{task_idx}")
+        print(f"Model saved for task {task_name} "
+              f"at /mnt/arc/yygx/pkgs_baselines/MaIL/last_ddpm_task_idx_{task_idx}")
 
         print("==============================================================")
-        exit(0)
 
     log.info("done")
     wandb.finish()
