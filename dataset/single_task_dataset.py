@@ -43,9 +43,6 @@ def get_max_data_len(data_directory: os.PathLike):
 class SingleTaskDataset(TrajectoryDataset):
     def __init__(
             self,
-            task_idx,
-            benchmark,
-            task_order_index,
             data_directory: os.PathLike,
             task_suite,
             # data='train',
@@ -63,6 +60,10 @@ class SingleTaskDataset(TrajectoryDataset):
             num_data: int = 10,
             data_aug=False,
             aug_factor=0.02,
+
+            task_idx=None,
+            benchmark=None,
+            task_order_index=None,
     ):
         super().__init__(
             data_directory=data_directory,
