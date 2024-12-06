@@ -80,7 +80,6 @@ def main(cfg: DictConfig) -> None:
         print("===================== SAVING CHECKPOINTS =====================")
         print(f"Model saved for task {task_name} "
               f"at /mnt/arc/yygx/pkgs_baselines/MaIL/last_ddpm_task_idx_{task_idx}")
-
         print("==============================================================")
 
     log.info("done")

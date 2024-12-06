@@ -505,7 +505,6 @@ class DiffusionAgent(BaseAgent):
         """
         Store the model weights inside the store path as model_weights.pth
         """
-        print(os.getcwd())
         os.makedirs(store_path, exist_ok=True)
         if self.use_ema:
             self.ema_helper.store(self.model.parameters())
