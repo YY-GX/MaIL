@@ -106,8 +106,6 @@ def main() -> None:
     OmegaConf.register_new_resolver("now", now)
     cfg = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
 
-    wandb.config = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
-
     wandb.init(
         project=cfg.wandb.project,
         entity=cfg.wandb.entity,
