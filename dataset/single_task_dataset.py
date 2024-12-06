@@ -73,6 +73,7 @@ class SingleTaskDataset(TrajectoryDataset):
             max_len_data=max_len_data,
             window_size=window_size
         )
+
         if task_idx:
             self.init_constructor(
                 data_directory,
@@ -96,7 +97,7 @@ class SingleTaskDataset(TrajectoryDataset):
                 task_order_index,
             )
         else:
-            pass
+            self.slices = []
 
 
 
