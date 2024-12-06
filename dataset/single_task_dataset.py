@@ -328,4 +328,4 @@ class SingleTaskDataset(TrajectoryDataset):
         act = self.actions[i, start:end]
         mask = self.masks[i, start:end]
 
-        return agentview_rgb, None, act, task_emb
+        return agentview_rgb, act, task_emb

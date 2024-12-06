@@ -276,7 +276,7 @@ class DiffusionAgent(BaseAgent):
 
 
         for data in self.train_dataloader:
-            bp_imgs, _, action, goal_imgs = data
+            bp_imgs, action, goal_imgs = data
 
             bp_imgs = bp_imgs.to(self.device)
             # inhand_imgs = inhand_imgs.to(self.device)
