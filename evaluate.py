@@ -42,6 +42,9 @@ def eval(cfg, task_embs, task_idx, agent, seed):
     file_name = os.path.basename(task_bddl_file).split('.')[0]
     task_emb = task_embs[file_name]
     init_states = task_suite.get_task_init_states(task_idx)
+    indices = np.arange(cfg.simulation.num_episode) % init_states.shape[0]
+    init_states_ = init_states[indices]
+    print(init_states_.size())
 
     env_args = {
         "bddl_file_name": task_bddl_file,
@@ -56,7 +59,7 @@ def eval(cfg, task_embs, task_idx, agent, seed):
     agent.reset()
     env.seed(seed)
     env.reset()
-    obs = env.set_init_state(init_state=init_states[0])
+    obs = env.set_init_state(init_state=init_states_)
 
     num_success = 0
     dones = [False] * cfg.simulation.num_episode
