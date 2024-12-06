@@ -16,7 +16,7 @@ os.chdir(os.environ['PYTHONPATH'])
 from libero.libero.envs import *
 from libero.libero import benchmark
 from libero.libero.envs import OffScreenRenderEnv
-from libero.libero.benchmark import get_benchmark
+from libero.libero.benchmark import get_benchmark, get_benchmark_dict
 os.chdir(current_working_directory)
 
 log = logging.getLogger(__name__)
@@ -33,11 +33,11 @@ def parse_args():
     return args
 
 
-def eval(cfg, benchmark, task_embs, task_idx, agent, seed):
+def eval(cfg, task_embs, task_idx, agent, seed):
     # data augmentation
     aug = iaa.arithmetic.ReplaceElementwise(iap.FromLowerResolution(iap.Binomial(cfg.aug_factor), size_px=8),[255])
 
-    task_suite = benchmark.get_benchmark_dict()[cfg.task_suite]()
+    task_suite = get_benchmark_dict()[cfg.task_suite]()
     task_bddl_file = task_suite.get_task_bddl_file_path(task_idx)
     file_name = os.path.basename(task_bddl_file).split('.')[0]
     task_emb = task_embs[file_name]
@@ -130,7 +130,7 @@ def main() -> None:
         # Load checkpoints
         agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{task_idx}.pth")
         # Eval pre-trained agent in Libero simu env
-        sr = eval(cfg, benchmark, task_embs, task_idx, agent, seed=args.seed)
+        sr = eval(cfg, task_embs, task_idx, agent, seed=args.seed)
         print(f">> Success Rate for {task_name}: {sr}")
         tasks_succ_ls.append(sr)
         np.save(f"{args.model_folder_path}/succ_list_seed_{args.seed}.npy", np.array(tasks_succ_ls))
