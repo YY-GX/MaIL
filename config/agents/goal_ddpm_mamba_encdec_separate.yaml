@@ -15,7 +15,7 @@ model:
     _target_: agents.models.oc_ddpm.diffusion_policy.Diffusion
     _recursive_: false
 
-    state_dim: 256 #${obs_dim}
+    state_dim: 128  # 256 #${obs_dim}
     action_dim: ${action_dim}
     beta_schedule: 'cosine'
     n_timesteps: ${diff_steps}
@@ -29,7 +29,7 @@ model:
     model:
       _target_: agents.models.goal_ddpm.mamba_cross.DiffusionMambaCross
       _recursive_: false
-      state_dim: 256 #${obs_dim}
+      state_dim: 128  # 256 #${obs_dim}
       action_dim: ${action_dim}
       goal_conditioned: False
       goal_seq_len: 10
