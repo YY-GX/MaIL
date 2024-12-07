@@ -7,7 +7,7 @@ defaults:
 agent_name: ddpm_mamba_encdec
 
 # yy: I add this
-folder_name: "separate_no_hand_500epoch"
+folder_name: "separate_no_hand_2000_epoch_ckpts"
 
 task_suite: libero_90
 task_order_index: 0
@@ -169,7 +169,7 @@ train_batch_size: 256
 val_batch_size: 256
 num_workers: 2
 device: 'cuda'
-epoch: 500
+epoch: 2000
 eval_every_n_epochs: 50
 scale_data: True
 
