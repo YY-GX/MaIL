@@ -6,6 +6,9 @@ defaults:
 # for the agent only with two images in horeka
 agent_name: ddpm_mamba_encdec
 
+# yy: I add this
+folder_name: "separate_no_hand_500epoch"
+
 task_suite: libero_90
 task_order_index: 0
 

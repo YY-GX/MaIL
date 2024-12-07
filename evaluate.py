@@ -10,11 +10,12 @@ from omegaconf import OmegaConf
 import pickle
 import wandb
 import datetime
+import json
 
 current_working_directory = os.getcwd()
 os.chdir(os.environ['PYTHONPATH'])
 from libero.libero.envs import *
-from libero.libero import benchmark
+from libero.libero import benchmark, task_orders, find_keys_by_value
 from libero.libero.envs import OffScreenRenderEnv
 from libero.libero.benchmark import get_benchmark, get_benchmark_dict
 os.chdir(current_working_directory)
@@ -24,6 +25,8 @@ log = logging.getLogger(__name__)
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
     parser.add_argument("--seed", type=int, default=10000)
+    parser.add_argument("--is_osm", type=int, default=0, choices=[0, 1])
+    parser.add_argument("--task_order_index", type=int, default=0)
     parser.add_argument("--model_folder_path", type=str,
                         default="/mnt/arc/yygx/pkgs_baselines/MaIL/checkpoints/separate_no_hand_ckpts/")
     parser.add_argument("--task_emb_dir", type=str,
@@ -33,18 +36,37 @@ def parse_args():
     return args
 
 
-def eval(cfg, task_embs, task_idx, agent, seed):
+def create_index_mapping(dict_map):
+    output_map = {}
+    key_index = 0
+    value_index = 0
+
+    for key, values in dict_map.items():
+        for _ in values:
+            output_map[value_index] = key_index
+            value_index += 1
+        key_index += 1
+
+    return output_map
+
+
+def eval(cfg, task_embs, task_idx, agent, seed, is_osm, mapping):
     # data augmentation
     aug = iaa.arithmetic.ReplaceElementwise(iap.FromLowerResolution(iap.Binomial(cfg.aug_factor), size_px=8),[255])
 
     task_suite = get_benchmark_dict()[cfg.task_suite]()
     task_bddl_file = task_suite.get_task_bddl_file_path(task_idx)
     file_name = os.path.basename(task_bddl_file).split('.')[0]
-    task_emb = task_embs[file_name]
+    if is_osm:
+        task_ori = find_keys_by_value(mapping, file_name + ".bddl")[0]
+        task_emb = task_embs[task_ori]
+    else:
+        task_emb = task_embs[file_name]
     init_states = task_suite.get_task_init_states(task_idx)
     indices = np.arange(cfg.simulation.num_episode) % init_states.shape[0]
     init_states_ = init_states[indices]
-    print(init_states_.size())
+    print(f">> task_bddl_file: {task_bddl_file}")
+    print("==========================================================")
 
     env_args = {
         "bddl_file_name": task_bddl_file,
@@ -120,20 +142,39 @@ def main() -> None:
     with open(f"{args.task_emb_dir}/{cfg.task_suite}.pkl", 'rb') as f:
         task_embs = pickle.load(f)
 
-    benchmark = get_benchmark(cfg.task_suite)(cfg.task_order_index)
-    n_manip_tasks = benchmark.n_tasks
+
+    if args.is_osm:
+        mapping_dir = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/mappings"
+        mapping_pth = f"{mapping_dir}/{cfg.task_suite}"
+        with open(mapping_pth, 'r') as json_file:
+            mapping = json.load(json_file)
+        index_mapping = create_index_mapping(mapping)
+
+
+    benchmark = get_benchmark(cfg.task_suite)(args.task_order_index)
+    task_id_ls = task_orders[args.task_order_index]
 
     tasks_succ_ls = []
 
-    for task_idx in range(n_manip_tasks):
-        task_name = benchmark.get_task_names()[task_idx]
+    """
+    task_id_ls is the list of evaluated task ids (original task may only have 44, 
+    but modified tasks could be much more, e.g., 100, then len(task_id_ls) == 100)
+    """
+    for task_idx, task_id in enumerate(task_id_ls):
+        print("===================== Start Evaluation =====================")
+        if args.is_osm:
+            model_index = index_mapping[task_id]  # model_index is the id for original model index
+            print(f">> Load model checkpoint id: {model_index}")
+            # TODO - Sarturday work on this
+
+        task_name = benchmark.get_task_names()[task_id]
         print(f">> Task Name: {task_name}")
         OmegaConf.resolve(cfg.agents)
-        agent = hydra.utils.instantiate(cfg.agents, task_idx=task_idx)
+        agent = hydra.utils.instantiate(cfg.agents, task_idx=task_id)
         # Load checkpoints
-        agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{task_idx}.pth")
+        agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{model_index}.pth")
         # Eval pre-trained agent in Libero simu env
-        sr = eval(cfg, task_embs, task_idx, agent, seed=args.seed)
+        sr = eval(cfg, task_embs, task_id, agent, seed=args.seed, is_osm=args.is_osm, mapping=mapping)
         print(f">> Success Rate for {task_name}: {sr}")
         tasks_succ_ls.append(sr)
         np.save(f"{args.model_folder_path}/succ_list_seed_{args.seed}.npy", np.array(tasks_succ_ls))
