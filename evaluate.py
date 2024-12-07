@@ -176,8 +176,9 @@ def main() -> None:
             agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{model_index}.pth")
         else:
             agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{task_id}.pth")
+            mapping = None
         # Eval pre-trained agent in Libero simu env
-        sr = eval(cfg, task_embs, task_id, agent, seed=args.seed, is_osm=args.is_osm, mapping=None, task_suite=args.task_suite)
+        sr = eval(cfg, task_embs, task_id, agent, seed=args.seed, is_osm=args.is_osm, mapping=mapping, task_suite=args.task_suite)
         print(f">> Success Rate for {task_name}: {sr}")
         tasks_succ_ls.append(sr)
         np.save(f"{args.model_folder_path}/succ_list_bm_{args.task_suite}_seed_{args.seed}.npy", np.array(tasks_succ_ls))
