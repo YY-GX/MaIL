@@ -27,6 +27,7 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=10000)
     parser.add_argument("--is_osm", type=int, default=0, choices=[0, 1])
     parser.add_argument("--task_order_index", type=int, default=0)
+    parser.add_argument("--task_suite", type=str, default="libero_90")
     parser.add_argument("--model_folder_path", type=str,
                         default="/mnt/arc/yygx/pkgs_baselines/MaIL/checkpoints/separate_no_hand_ckpts/")
     parser.add_argument("--task_emb_dir", type=str,
@@ -50,11 +51,11 @@ def create_index_mapping(dict_map):
     return output_map
 
 
-def eval(cfg, task_embs, task_idx, agent, seed, is_osm, mapping):
+def eval(cfg, task_embs, task_idx, agent, seed, is_osm, mapping, task_suite):
     # data augmentation
     aug = iaa.arithmetic.ReplaceElementwise(iap.FromLowerResolution(iap.Binomial(cfg.aug_factor), size_px=8),[255])
 
-    task_suite = get_benchmark_dict()[cfg.task_suite]()
+    task_suite = get_benchmark_dict()[task_suite]()
     task_bddl_file = task_suite.get_task_bddl_file_path(task_idx)
     file_name = os.path.basename(task_bddl_file).split('.')[0]
     if is_osm:
@@ -139,19 +140,19 @@ def main() -> None:
         config=wandb.config
     )
 
-    with open(f"{args.task_emb_dir}/{cfg.task_suite}.pkl", 'rb') as f:
+    with open(f"{args.task_emb_dir}/libero_90.pkl", 'rb') as f:
         task_embs = pickle.load(f)
 
 
     if args.is_osm:
         mapping_dir = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/mappings"
-        mapping_pth = f"{mapping_dir}/{cfg.task_suite}"
+        mapping_pth = f"{mapping_dir}/{args.task_suite}"
         with open(mapping_pth, 'r') as json_file:
             mapping = json.load(json_file)
         index_mapping = create_index_mapping(mapping)
 
 
-    benchmark = get_benchmark(cfg.task_suite)(args.task_order_index)
+    benchmark = get_benchmark(args.task_suite)(args.task_order_index)
     task_id_ls = task_orders[args.task_order_index]
 
     tasks_succ_ls = []
@@ -174,7 +175,7 @@ def main() -> None:
         # Load checkpoints
         agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{model_index}.pth")
         # Eval pre-trained agent in Libero simu env
-        sr = eval(cfg, task_embs, task_id, agent, seed=args.seed, is_osm=args.is_osm, mapping=mapping)
+        sr = eval(cfg, task_embs, task_id, agent, seed=args.seed, is_osm=args.is_osm, mapping=mapping, task_suite = args.task_suite)
         print(f">> Success Rate for {task_name}: {sr}")
         tasks_succ_ls.append(sr)
         np.save(f"{args.model_folder_path}/succ_list_seed_{args.seed}.npy", np.array(tasks_succ_ls))
