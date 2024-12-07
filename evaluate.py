@@ -172,7 +172,10 @@ def main() -> None:
         OmegaConf.resolve(cfg.agents)
         agent = hydra.utils.instantiate(cfg.agents, task_idx=task_id)
         # Load checkpoints
-        agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{model_index}.pth")
+        if args.is_osm:
+            agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{model_index}.pth")
+        else:
+            agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{task_id}.pth")
         # Eval pre-trained agent in Libero simu env
         sr = eval(cfg, task_embs, task_id, agent, seed=args.seed, is_osm=args.is_osm, mapping=mapping, task_suite = args.task_suite)
         print(f">> Success Rate for {task_name}: {sr}")
