@@ -144,7 +144,7 @@ def main() -> None:
 
 
     if args.is_osm:
-        mapping_dir = "/home/yygx/Dropbox/Codes/UNC_Research/pkgs_simu/LIBERO/libero/mappings"
+        mapping_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/mappings"
         mapping_pth = f"{mapping_dir}/{args.task_suite}.json"
         with open(mapping_pth, 'r') as json_file:
             mapping = json.load(json_file)
