@@ -19,13 +19,13 @@ from agents.models.oc_ddpm.ema import ExponentialMovingAverage
 from agents.utils import Scaler, ActionScaler
 
 
-current_working_directory = os.getcwd()
-os.chdir(os.environ['PYTHONPATH'])
+# current_working_directory = os.getcwd()
+# os.chdir(os.environ['PYTHONPATH'])
 from libero.libero.envs import *
 from libero.libero import benchmark
 from libero.libero.envs import OffScreenRenderEnv
 from libero.libero.benchmark import get_benchmark
-os.chdir(current_working_directory)
+# os.chdir(current_working_directory)
 
 
 
