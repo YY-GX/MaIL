@@ -1,7 +1,8 @@
 import torch
 import torchvision
 from typing import List, Callable
-from robomimic.models.obs_core import VisualCore
+# from robomimic.models.obs_core import VisualCore
+from robomimic.models.base_nets import VisualCore
 
 
 def get_resnet(input_shape: List[int], output_size: int):
