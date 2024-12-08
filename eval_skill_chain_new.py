@@ -236,7 +236,6 @@ def main():
                                              single_video=False)
         video_writer_wristcameraview = VideoWriter(os.path.join(video_folder, "wristcameraview"), save_video=True,
                                                    single_video=False)
-        print("======= DEBUG =======")
 
         # yy: env preparation
         env_args = {
@@ -251,7 +250,6 @@ def main():
             "camera_heights": [cfg_.data.img_h for _, cfg_ in enumerate(cfg_ls)],
             "camera_widths": [cfg_.data.img_w for _, cfg_ in enumerate(cfg_ls)],
         }
-        print(env_args)
         env_num = cfg['eval']['n_eval']
         print("======= DEBUG =======")
         env = SubprocVectorEnv(
