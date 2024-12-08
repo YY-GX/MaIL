@@ -229,13 +229,11 @@ def main():
 
 
     os.system(f"mkdir -p {video_folder}")
-    print("======= DEBUG =======")
 
     with Timer() as t:
         # yy: video recorder preparation
         video_writer_agentview = VideoWriter(os.path.join(video_folder, "agentview"), save_video=True,
                                              single_video=False)
-        print("======= DEBUG =======")
         video_writer_wristcameraview = VideoWriter(os.path.join(video_folder, "wristcameraview"), save_video=True,
                                                    single_video=False)
         print("======= DEBUG =======")
@@ -253,13 +251,16 @@ def main():
             "camera_heights": [cfg_.data.img_h for _, cfg_ in enumerate(cfg_ls)],
             "camera_widths": [cfg_.data.img_w for _, cfg_ in enumerate(cfg_ls)],
         }
+        print(env_args)
         env_num = cfg['eval']['n_eval']
+        print("======= DEBUG =======")
         env = SubprocVectorEnv(
             [
                 lambda: SequentialEnv(n_tasks=len(cfg_ls), init_states_ls=init_states_ls, **env_args)
                 for _ in range(env_num)
             ]
         )
+        print("======= DEBUG =======")
         env.reset()
         env.seed(cfg.seed)
         [[algorithm.reset() for algorithm in algorithms] for algorithms in algo_ls]
