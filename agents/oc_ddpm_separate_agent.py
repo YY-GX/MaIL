@@ -27,10 +27,11 @@ from libero.libero.envs import OffScreenRenderEnv
 from libero.libero.benchmark import get_benchmark
 # os.chdir(current_working_directory)
 
-
-
 # A logger for this file
 log = logging.getLogger(__name__)
+
+
+is_hand_view = True
 
 
 class DiffusionPolicy(nn.Module):
@@ -52,12 +53,16 @@ class DiffusionPolicy(nn.Module):
         # the encoder should be shared by all the baselines
 
         if self.visual_input:
-            agentview_image, _, goal_imgs = inputs  # goal_imgs here is actually task language emb
+            if is_hand_view:
+                agentview_image, in_hand_image, goal_imgs = inputs  # goal_imgs here is actually task language emb
+            else:
+                agentview_image, _, goal_imgs = inputs  # goal_imgs here is actually task language emb
 
             B, T, C, H, W = agentview_image.size()
 
             agentview_image = agentview_image.view(B * T, C, H, W)
-            # in_hand_image = in_hand_image.view(B * T, C, H, W)
+            if is_hand_view:
+                in_hand_image = in_hand_image.view(B * T, C, H, W)
             # state = state.view(B * T, -1)
 
             # bp_imgs = einops.rearrange(bp_imgs, "B T C H W -> (B T) C H W")
@@ -70,8 +75,12 @@ class DiffusionPolicy(nn.Module):
 
             goal_emb = self.linear(goal_imgs)
 
-            obs_dict = {"agentview_rgb": agentview_image}
-                        # "robot_ee_pos": state}
+            if is_hand_view:
+                obs_dict = {"agentview_rgb": agentview_image,
+                            "eye_in_hand_rgb": in_hand_image, }
+            else:
+                obs_dict = {"agentview_rgb": agentview_image}
+                            # "robot_ee_pos": state}
 
             obs = self.obs_encoder(obs_dict)
             obs = obs.view(B, T, -1)
@@ -144,7 +153,7 @@ class DiffusionAgent(BaseAgent):
 
         benchmark = get_benchmark(trainset.task_suite)(trainset.task_order_index)
         # print(f"task_idx: {task_idx}")
-        self.trainset = hydra.utils.instantiate(trainset, task_idx=task_idx, benchmark=benchmark)
+        self.trainset = hydra.utils.instantiate(trainset, task_idx=task_idx, benchmark=benchmark, is_hand_view=is_hand_view)
 
         # yy: equal to super()
         self.scaler = ActionScaler(self.trainset.get_all_actions(), scale_data, device)
@@ -199,7 +208,8 @@ class DiffusionAgent(BaseAgent):
         self.action_counter = self.action_seq_size
 
         self.bp_image_context = deque(maxlen=self.obs_seq_len)
-        # self.inhand_image_context = deque(maxlen=self.obs_seq_len)
+        if is_hand_view:
+            self.inhand_image_context = deque(maxlen=self.obs_seq_len)
         self.des_robot_pos_context = deque(maxlen=self.window_size)
 
         self.obs_context = deque(maxlen=self.obs_seq_len)
@@ -276,10 +286,14 @@ class DiffusionAgent(BaseAgent):
 
 
         for data in self.train_dataloader:
-            bp_imgs, action, goal_imgs = data
+            if is_hand_view:
+                bp_imgs, inhand_imgs, action, goal_imgs = data
+            else:
+                bp_imgs, action, goal_imgs = data
 
             bp_imgs = bp_imgs.to(self.device)
-            # inhand_imgs = inhand_imgs.to(self.device)
+            if is_hand_view:
+                inhand_imgs = inhand_imgs.to(self.device)
 
             goal_imgs = goal_imgs.to(self.device)
 
@@ -290,9 +304,13 @@ class DiffusionAgent(BaseAgent):
 
             # obs = obs[:, :self.obs_seq_len].contiguous()
             bp_imgs = bp_imgs[:, :self.obs_seq_len].contiguous()
-            # inhand_imgs = inhand_imgs[:, :self.obs_seq_len].contiguous()
+            if is_hand_view:
+                inhand_imgs = inhand_imgs[:, :self.obs_seq_len].contiguous()
 
-            state = (bp_imgs, None, goal_imgs)
+            if is_hand_view:
+                state = (bp_imgs, inhand_imgs, goal_imgs)
+            else:
+                state = (bp_imgs, None, goal_imgs)
 
             batch_loss = self.train_step(state, action)
 
@@ -412,7 +430,8 @@ class DiffusionAgent(BaseAgent):
         self.action_counter = self.action_seq_size
 
         self.bp_image_context.clear()
-        # self.inhand_image_context.clear()
+        if is_hand_view:
+            self.inhand_image_context.clear()
         self.des_robot_pos_context.clear()
 
     @torch.no_grad()
@@ -420,10 +439,14 @@ class DiffusionAgent(BaseAgent):
         # scale data if necessarry, otherwise the scaler will return unchanged values
 
         if if_vision:
-            bp_image, _, goal_image = state
+            if is_hand_view:
+                bp_image, inhand_image, goal_image = state
+            else:
+                bp_image, _, goal_image = state
 
             bp_image = torch.from_numpy(bp_image).to(self.device).float().permute(2, 0, 1).unsqueeze(0) / 255.
-            # inhand_image = torch.from_numpy(inhand_image).to(self.device).float().permute(2, 0, 1).unsqueeze(0) / 255.
+            if is_hand_view:
+                inhand_image = torch.from_numpy(inhand_image).to(self.device).float().permute(2, 0, 1).unsqueeze(0) / 255.
 
             goal_image = goal_image.to(self.device).unsqueeze(0)
 
@@ -433,14 +456,19 @@ class DiffusionAgent(BaseAgent):
             # des_robot_pos = self.scaler.scale_input(des_robot_pos)
 
             self.bp_image_context.append(bp_image)
-            # self.inhand_image_context.append(inhand_image)
+            if is_hand_view:
+                self.inhand_image_context.append(inhand_image)
             # self.des_robot_pos_context.append(des_robot_pos)
 
             bp_image_seq = torch.stack(tuple(self.bp_image_context), dim=1)
-            # inhand_image_seq = torch.stack(tuple(self.inhand_image_context), dim=1)
+            if is_hand_view:
+                inhand_image_seq = torch.stack(tuple(self.inhand_image_context), dim=1)
             # des_robot_pos_seq = torch.stack(tuple(self.des_robot_pos_context), dim=1)
 
-            input_state = (bp_image_seq, None, goal_image)
+            if is_hand_view:
+                input_state = (bp_image_seq, inhand_image_seq, goal_image)
+            else:
+                input_state = (bp_image_seq, None, goal_image)
         else:
             obs = torch.from_numpy(state).float().to(self.device).unsqueeze(0)
             obs = self.scaler.scale_input(obs)
@@ -473,12 +501,19 @@ class DiffusionAgent(BaseAgent):
         # scale data if necessarry, otherwise the scaler will return unchanged values
 
         if if_vision:
-            bp_imgs, _ = state
+            if is_hand_view:
+                bp_imgs, inhand_imgs = state
+            else:
+                bp_imgs, _ = state
 
             bp_imgs = bp_imgs[:, :self.obs_seq_len].contiguous()
-            # inhand_imgs = inhand_imgs[:, :self.obs_seq_len].contiguous()
+            if is_hand_view:
+                inhand_imgs = inhand_imgs[:, :self.obs_seq_len].contiguous()
 
-            input_state = (bp_imgs, None)
+            if is_hand_view:
+                input_state = (bp_imgs, inhand_imgs)
+            else:
+                input_state = (bp_imgs, None)
         else:
             obs = torch.from_numpy(state).float().to(self.device).unsqueeze(0)
             obs = self.scaler.scale_input(obs)

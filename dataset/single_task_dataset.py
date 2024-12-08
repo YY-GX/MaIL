@@ -65,6 +65,7 @@ class SingleTaskDataset(TrajectoryDataset):
             task_idx=None,
             benchmark=None,
             task_order_index=None,
+            is_hand_view=False,
     ):
         super().__init__(
             data_directory=data_directory,
@@ -98,6 +99,7 @@ class SingleTaskDataset(TrajectoryDataset):
                 task_idx,
                 benchmark,
                 task_order_index,
+                is_hand_view
             )
         else:
             self.slices = [1]
@@ -126,7 +128,9 @@ class SingleTaskDataset(TrajectoryDataset):
                          task_idx=None,
                          benchmark=None,
                          task_order_index=None,
+                         is_hand_view=False
     ):
+        self.is_hand_view = is_hand_view
         self.task_idx = task_idx
         task_name = benchmark.get_task_names()[self.task_idx]
         demo_file_name = f"{task_name}_demo.hdf5"
@@ -179,7 +183,8 @@ class SingleTaskDataset(TrajectoryDataset):
         actions = []
         masks = []
         agentview_rgb = []
-        # eye_in_hand_rgb = []
+        if self.is_hand_view:
+            eye_in_hand_rgb = []
 
         # goal_rgbs = []
 
@@ -230,13 +235,15 @@ class SingleTaskDataset(TrajectoryDataset):
                 # goal_view = demo['obs']['agentview_rgb'][-1:]
 
                 agent_view = demo['obs']['agentview_rgb'][:]
-                # eye_in_hand = demo['obs']['eye_in_hand_rgb'][:]
+                if self.is_hand_view:
+                    eye_in_hand = demo['obs']['eye_in_hand_rgb'][:]
 
                 actions.append(zero_actions)
                 masks.append(zero_mask)
 
                 agentview_rgb.append(agent_view)
-                # eye_in_hand_rgb.append(eye_in_hand)
+                if self.is_hand_view:
+                    eye_in_hand_rgb.append(eye_in_hand)
 
                 data_embs.append(task_emb)
 
@@ -251,7 +258,8 @@ class SingleTaskDataset(TrajectoryDataset):
         # self.eye_in_hand_rgb = torch.from_numpy(np.concatenate(eye_in_hand_rgb)).to(device)
 
         self.agentview_rgb = agentview_rgb
-        # self.eye_in_hand_rgb = eye_in_hand_rgb
+        if self.is_hand_view:
+            self.eye_in_hand_rgb = eye_in_hand_rgb
 
         self.tasks = tasks
         self.data_embs = data_embs
@@ -316,7 +324,8 @@ class SingleTaskDataset(TrajectoryDataset):
         task_emb = self.data_embs[i]
 
         agentview_rgb = self.agentview_rgb[i][start:end]
-        # eye_in_hand_rgb = self.eye_in_hand_rgb[i][start:end]
+        if self.is_hand_view:
+            eye_in_hand_rgb = self.eye_in_hand_rgb[i][start:end]
 
         if self.data_aug is True:
             # cv2.imshow('ori', agentview_rgb[0])
@@ -338,9 +347,13 @@ class SingleTaskDataset(TrajectoryDataset):
         task_emb = task_emb.to(self.device).float()
 
         agentview_rgb = torch.from_numpy(agentview_rgb).to(self.device).float().permute(0, 3, 1, 2) / 255.
-        # eye_in_hand_rgb = torch.from_numpy(eye_in_hand_rgb).to(self.device).float().permute(0, 3, 1, 2) / 255.
+        if self.is_hand_view:
+            eye_in_hand_rgb = torch.from_numpy(eye_in_hand_rgb).to(self.device).float().permute(0, 3, 1, 2) / 255.
 
         act = self.actions[i, start:end]
         mask = self.masks[i, start:end]
 
-        return agentview_rgb, act, task_emb
+        if self.is_hand_view:
+            return agentview_rgb, eye_in_hand_rgb, act, task_emb
+        else:
+            return agentview_rgb, act, task_emb
