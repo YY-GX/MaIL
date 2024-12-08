@@ -35,10 +35,10 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 import os
 import sys
-# Ensure the correct path is in sys.path
-libero_path = os.environ.get('PYTHONPATH', '/mnt/arc/yygx/pkgs_baselines/LIBERO')  # Default to LIBERO if not set
-if libero_path not in sys.path:
-    sys.path.insert(0, libero_path)
+# # Ensure the correct path is in sys.path
+# libero_path = os.environ.get('PYTHONPATH', '/mnt/arc/yygx/pkgs_baselines/LIBERO')  # Default to LIBERO if not set
+# if libero_path not in sys.path:
+#     sys.path.insert(0, libero_path)
 # Import the required modules
 from libero.libero import get_libero_path
 from libero.libero.benchmark import get_benchmark, task_orders
