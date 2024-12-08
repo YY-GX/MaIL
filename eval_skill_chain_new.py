@@ -281,8 +281,8 @@ def main():
                 )
                 for i, cfg_ in enumerate(cfg_ls)
             ],
-            "camera_heights": [cfg_.data.img_h for _, cfg_ in enumerate(cfg_ls)],
-            "camera_widths": [cfg_.data.img_w for _, cfg_ in enumerate(cfg_ls)],
+            "camera_heights": [cfg_mail.camera_shape[0] for _, cfg_ in enumerate(cfg_ls)],
+            "camera_widths": [cfg_mail.camera_shape[0] for _, cfg_ in enumerate(cfg_ls)],
         }
         env_num = cfg['eval']['n_eval']
 
