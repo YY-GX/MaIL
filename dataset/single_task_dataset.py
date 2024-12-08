@@ -197,9 +197,9 @@ class SingleTaskDataset(TrajectoryDataset):
 
             f = h5py.File(data_dir, 'r')
 
-            # get the image's basic shape from demo_0
-            if self.obs_keys == "rgb":
-                H, W, C = f["data"]["demo_0"]["obs"][self.obs_modalities[0]].shape[1:]
+            # # get the image's basic shape from demo_0
+            # if self.obs_keys == "rgb":
+            #     H, W, C = f["data"]["demo_0"]["obs"][self.obs_modalities[0]].shape[1:]
 
             # determinate which demo should be loaded using demo_keys_list
             if filter_by_attribute is not None:

@@ -26,4 +26,7 @@ for task_order_index in {27..42}; do
 
     # Print a confirmation message
     echo "Submitted task_order_index=${task_order_index}"
+
+    # Wait for 2 seconds before the next iteration
+    sleep 2
 done
