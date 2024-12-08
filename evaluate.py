@@ -12,12 +12,12 @@ import wandb
 import datetime
 import json
 
-current_working_directory = os.getcwd()
-os.chdir(os.environ['PYTHONPATH'])
+# current_working_directory = os.getcwd()
+# os.chdir(os.environ['PYTHONPATH'])
 from libero.libero.envs import *
 from libero.libero.envs import OffScreenRenderEnv
 from libero.libero.benchmark import get_benchmark, get_benchmark_dict, task_orders, find_keys_by_value
-os.chdir(current_working_directory)
+# os.chdir(current_working_directory)
 
 log = logging.getLogger(__name__)
 
