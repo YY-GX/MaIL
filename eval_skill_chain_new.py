@@ -211,12 +211,10 @@ def main():
     """
     Start Evaluation
     """
-    print("======= DEBUG =======")
     cfg = cfg_ls[0]
     eval_task_id = []
     ObsUtils.initialize_obs_utils_with_obs_specs({"obs": cfg.data.obs.modality})
 
-    print("======= DEBUG =======")
 
 
     save_stats_pth = os.path.join(
@@ -237,8 +235,10 @@ def main():
         # yy: video recorder preparation
         video_writer_agentview = VideoWriter(os.path.join(video_folder, "agentview"), save_video=True,
                                              single_video=False)
+        print("======= DEBUG =======")
         video_writer_wristcameraview = VideoWriter(os.path.join(video_folder, "wristcameraview"), save_video=True,
                                                    single_video=False)
+        print("======= DEBUG =======")
 
         # yy: env preparation
         env_args = {
@@ -275,6 +275,7 @@ def main():
 
         # TODO: Start coding from this line!!!
         # yy: formal start of the evaluation
+        print("======= DEBUG =======")
         with torch.no_grad():
             while steps < (cfg.eval.max_steps * n_tasks):
                 # print("--------------------------------------------------------------------")
