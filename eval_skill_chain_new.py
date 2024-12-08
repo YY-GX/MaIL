@@ -130,8 +130,7 @@ def main():
     n_tasks = benchmark.n_tasks
     task_id_ls = task_orders[args.task_order_index]
     task_idx_ls = [i for i in range(len(task_id_ls))]
-    with open(f"{args.task_emb_dir}/libero_90.pkl", 'rb') as f:
-        task_embs = pickle.load(f)
+
 
     """
     Preparation for MaIL
@@ -144,6 +143,8 @@ def main():
     OmegaConf.register_new_resolver("now", now)
     cfg = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
     OmegaConf.resolve(cfg.agents)
+    with open(f"{args.task_emb_dir}/libero_90.pkl", 'rb') as f:
+        task_embs_mail = pickle.load(f)
 
 
     # Obtain language descriptions
@@ -210,21 +211,27 @@ def main():
     """
     Start Evaluation
     """
+    print("======= DEBUG =======")
     cfg = cfg_ls[0]
     eval_task_id = []
     ObsUtils.initialize_obs_utils_with_obs_specs({"obs": cfg.data.obs.modality})
 
+    print("======= DEBUG =======")
+
+
     save_stats_pth = os.path.join(
         save_dir,
-        f"long_horizon_task_{str(task_id_ls)}.stats",
+        f"long_horizon_task.stats",
     )
 
     video_folder = os.path.join(
         save_dir,
-        f"long_horizon_task_{str(task_id_ls)}_videos",
+        f"long_horizon_task_videos",
     )
 
+
     os.system(f"mkdir -p {video_folder}")
+    print("======= DEBUG =======")
 
     with Timer() as t:
         # yy: video recorder preparation
@@ -281,7 +288,7 @@ def main():
                 for k in range(env_num):
                     agent = hydra.utils.instantiate(cfg.agents, task_idx=task_indexes[k])
                     task_name = task_ls[task_indexes[k]].name
-                    task_emb = task_embs[task_name]
+                    task_emb = task_embs_mail[task_name]
                     action = mail_select_action(obs=obs[k], agent=agent, task_emb=task_emb)
                     actions = np.vstack([actions, action])
                 actions = actions[1:, ...]
