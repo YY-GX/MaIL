@@ -30,3 +30,37 @@ for task_order_index in {27..42}; do
     # Wait for 2 seconds before the next iteration
     sleep 2
 done
+
+
+#Submitted batch job 8219
+#Submitted task_order_index=27
+#Submitted batch job 8220
+#Submitted task_order_index=28
+#Submitted batch job 8221
+#Submitted task_order_index=29
+#Submitted batch job 8222
+#Submitted task_order_index=30
+#Submitted batch job 8223
+#Submitted task_order_index=31
+#Submitted batch job 8224
+#Submitted task_order_index=32
+#Submitted batch job 8225
+#Submitted task_order_index=33
+#Submitted batch job 8226
+#Submitted task_order_index=34
+#Submitted batch job 8227
+#Submitted task_order_index=35
+#Submitted batch job 8228
+#Submitted task_order_index=36
+#Submitted batch job 8229
+#Submitted task_order_index=37
+#Submitted batch job 8230
+#Submitted task_order_index=38
+#Submitted batch job 8231
+#Submitted task_order_index=39
+#Submitted batch job 8232
+#Submitted task_order_index=40
+#Submitted batch job 8233
+#Submitted task_order_index=41
+#Submitted batch job 8234
+#Submitted task_order_index=42
