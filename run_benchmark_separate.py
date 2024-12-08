@@ -17,7 +17,7 @@ from agents.utils import sim_framework_path
 from libero.libero.envs import *
 from libero.libero import benchmark
 from libero.libero.envs import OffScreenRenderEnv
-from libero.libero.benchmark import get_benchmark
+from libero.libero.benchmark import get_benchmark, task_orders
 # os.chdir(current_working_directory)
 
 log = logging.getLogger(__name__)
@@ -76,10 +76,14 @@ def main(cfg: DictConfig) -> None:
         for _ in tqdm(range(agent.epoch)):
             agent.train_single_vision_agent()
 
-        agent.store_model_weights(store_path=f"/mnt/arc/yygx/pkgs_baselines/MaIL/checkpoints/{cfg.folder_name}", sv_name=f"last_ddpm_task_idx_{task_idx}.pth")
+        if cfg.is_bl3_all:
+            real_task_id = task_orders[cfg.task_order_index][task_idx]
+        else:
+            real_task_id = task_idx
+        agent.store_model_weights(store_path=f"/mnt/arc/yygx/pkgs_baselines/MaIL/checkpoints/{cfg.folder_name}", sv_name=f"last_ddpm_task_idx_{real_task_id}.pth")
         print("===================== SAVING CHECKPOINTS =====================")
         print(f"Model saved for task {task_name} "
-              f"at /mnt/arc/yygx/pkgs_baselines/MaIL/last_ddpm_task_idx_{task_idx}")
+              f"at /mnt/arc/yygx/pkgs_baselines/MaIL/last_ddpm_task_idx_{real_task_id}")
         print("==============================================================")
 
     log.info("done")

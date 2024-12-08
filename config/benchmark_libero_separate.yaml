@@ -11,7 +11,7 @@ folder_name: "separate_no_hand_2000_epoch_ckpts"
 
 task_suite: libero_90
 task_order_index: 0
-is_bl3_all: True  # yy: rememeber to change this
+is_bl3_all: False  # yy: rememeber to change this
 
 task_name: multi_task
 #crop_shape: (18, 24)
