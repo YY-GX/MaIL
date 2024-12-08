@@ -68,6 +68,7 @@ import numpy as np
 import datetime
 from omegaconf import OmegaConf
 import hydra
+import wandb
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -168,6 +169,16 @@ def main():
     OmegaConf.resolve(cfg_mail.agents)
     with open(f"{args.task_emb_dir}/libero_90.pkl", 'rb') as f:
         task_embs_mail = pickle.load(f)
+
+    wandb.init(
+        project=cfg_mail.wandb.project,
+        entity=cfg_mail.wandb.entity,
+        group=cfg_mail.group,
+        mode="online",
+        config=wandb.config
+    )
+
+
 
 
     # Obtain language descriptions
