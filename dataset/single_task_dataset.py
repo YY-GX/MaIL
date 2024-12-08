@@ -10,7 +10,7 @@ from dataset.base_dataset import TrajectoryDataset
 from agents.utils import sim_framework_path
 import imgaug.parameters as iap
 from imgaug import augmenters as iaa
-
+import re
 
 
 def get_max_data_len(data_directory: os.PathLike):
@@ -60,6 +60,7 @@ class SingleTaskDataset(TrajectoryDataset):
             num_data: int = 10,
             data_aug=False,
             aug_factor=0.02,
+            is_bl3_all=False,
 
             task_idx=None,
             benchmark=None,
@@ -93,6 +94,7 @@ class SingleTaskDataset(TrajectoryDataset):
                 num_data,
                 data_aug,
                 aug_factor,
+                is_bl3_all,
                 task_idx,
                 benchmark,
                 task_order_index,
@@ -119,6 +121,7 @@ class SingleTaskDataset(TrajectoryDataset):
                          num_data: int = 10,
                          data_aug=False,
                          aug_factor=0.02,
+                         is_bl3_all=False,
 
                          task_idx=None,
                          benchmark=None,
@@ -139,7 +142,16 @@ class SingleTaskDataset(TrajectoryDataset):
         # self.data_dir = [os.path.join(data_directory, file)
         #                  for file in os.listdir(data_directory) if file.endswith('.hdf5')]
 
-        self.data_dir = [os.path.join(data_directory, demo_file_name)]
+        if is_bl3_all:
+            data_directory = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/datasets/bl3_all/"
+            # Get all .hdf5 files in the directory that include the task_name
+            self.data_dir = [
+                os.path.join(data_directory, file)
+                for file in os.listdir(data_directory)
+                if file.endswith(".hdf5") and task_name in file
+            ]
+        else:
+            self.data_dir = [os.path.join(data_directory, demo_file_name)]
 
         # self.data_dir.sort()
         # if len(self.data_dir) > 20:
@@ -172,7 +184,11 @@ class SingleTaskDataset(TrajectoryDataset):
         # goal_rgbs = []
 
         for data_dir in self.data_dir:
-            filename = os.path.basename(data_dir).split('.')[0][:-5]
+            if is_bl3_all:
+                base_name = os.path.basename(data_dir).split('.')[0]
+                filename = re.sub(r'_\d+_demo$', '', base_name)
+            else:
+                filename = os.path.basename(data_dir).split('.')[0][:-5]
             # task_id = TaskIDMapping[filename]
 
             task_emb = tasks[filename]
