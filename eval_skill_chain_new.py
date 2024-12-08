@@ -12,24 +12,47 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 
-current_working_directory = os.getcwd()
-os.chdir(os.environ['PYTHONPATH'])
+# current_working_directory = os.getcwd()
+# os.chdir(os.environ['PYTHONPATH'])
+# from libero.libero import get_libero_path
+# from libero.libero.benchmark import get_benchmark, task_orders
+# from libero.libero.envs import OffScreenRenderEnv, SubprocVectorEnv, SequentialEnv
+# from libero.libero.utils.time_utils import Timer
+# from libero.libero.utils.video_utils import VideoWriter
+# from libero.lifelong.metric import (
+#     raw_obs_to_tensor_obs,
+# )
+# from libero.lifelong.utils import (
+#     safe_device,
+#     torch_load_model,
+# )
+# from libero.lifelong.main import get_task_embs
+# import robomimic.utils.obs_utils as ObsUtils
+# from libero.lifelong.algos import get_algo_class
+# os.chdir(current_working_directory)
+
+
+
+import os
+import sys
+# Ensure the correct path is in sys.path
+libero_path = os.environ.get('PYTHONPATH', '/mnt/arc/yygx/pkgs_baselines/LIBERO')  # Default to LIBERO if not set
+if libero_path not in sys.path:
+    sys.path.insert(0, libero_path)
+# Import the required modules
 from libero.libero import get_libero_path
 from libero.libero.benchmark import get_benchmark, task_orders
 from libero.libero.envs import OffScreenRenderEnv, SubprocVectorEnv, SequentialEnv
 from libero.libero.utils.time_utils import Timer
 from libero.libero.utils.video_utils import VideoWriter
-from libero.lifelong.metric import (
-    raw_obs_to_tensor_obs,
-)
-from libero.lifelong.utils import (
-    safe_device,
-    torch_load_model,
-)
+from libero.lifelong.metric import raw_obs_to_tensor_obs
+from libero.lifelong.utils import safe_device, torch_load_model
 from libero.lifelong.main import get_task_embs
 import robomimic.utils.obs_utils as ObsUtils
 from libero.lifelong.algos import get_algo_class
-os.chdir(current_working_directory)
+
+
+
 
 
 import numpy as np
