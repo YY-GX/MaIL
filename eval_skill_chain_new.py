@@ -164,8 +164,8 @@ def main():
         return datetime.now().strftime(format)
     OmegaConf.register_new_resolver("add", add_resolver)
     OmegaConf.register_new_resolver("now", now)
-    cfg = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
-    OmegaConf.resolve(cfg.agents)
+    cfg_mail = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
+    OmegaConf.resolve(cfg_mail.agents)
     with open(f"{args.task_emb_dir}/libero_90.pkl", 'rb') as f:
         task_embs_mail = pickle.load(f)
 
@@ -274,14 +274,14 @@ def main():
             "camera_widths": [cfg_.data.img_w for _, cfg_ in enumerate(cfg_ls)],
         }
         env_num = cfg['eval']['n_eval']
-        print("======= DEBUG =======")
+
         env = SubprocVectorEnv(
             [
                 lambda: SequentialEnv(n_tasks=len(cfg_ls), init_states_ls=init_states_ls, **env_args)
                 for _ in range(env_num)
             ]
         )
-        print("======= DEBUG =======")
+
         env.reset()
         env.seed(cfg.seed)
         [[algorithm.reset() for algorithm in algorithms] for algorithms in algo_ls]
@@ -297,7 +297,7 @@ def main():
 
         # TODO: Start coding from this line!!!
         # yy: formal start of the evaluation
-        print("======= DEBUG =======")
+
         with torch.no_grad():
             while steps < (cfg.eval.max_steps * n_tasks):
                 # print("--------------------------------------------------------------------")
@@ -309,7 +309,7 @@ def main():
 
                 actions = np.zeros((1, 7))
                 for k in range(env_num):
-                    agent = hydra.utils.instantiate(cfg.agents, task_idx=task_indexes[k])
+                    agent = hydra.utils.instantiate(cfg_mail.agents, task_idx=task_indexes[k])
                     task_name = task_ls[task_indexes[k]].name
                     task_emb = task_embs_mail[task_name]
                     action = mail_select_action(obs=obs[k], agent=agent, task_emb=task_emb)
