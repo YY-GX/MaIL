@@ -21,6 +21,9 @@ from libero.libero.benchmark import get_benchmark, get_benchmark_dict, task_orde
 
 log = logging.getLogger(__name__)
 
+is_use_hand = True
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
     parser.add_argument("--seed", type=int, default=10000)
@@ -95,13 +98,19 @@ def eval(cfg, task_embs, task_idx, agent, seed, is_osm, mapping, task_suite):
     with torch.no_grad():
         for j in range(cfg.simulation.max_step_per_episode):
             agentview_rgb = [each_obs["agentview_image"] for each_obs in obs]
+            if is_use_hand:
+                wristview_rgb = [each_obs["robot0_eye_in_hand_image"] for each_obs in obs]
 
             if cfg.data_aug:
                 agentview_rgb = [aug(image=rgb) for rgb in agentview_rgb]
 
             all_actions = np.zeros(7)
-            for each_agentview_rgb in agentview_rgb:
-                state = (each_agentview_rgb, None, task_emb)
+            for idx, each_agentview_rgb in enumerate(agentview_rgb):
+                if is_use_hand:
+                    eye_in_hand_rgb = wristview_rgb[idx]
+                    state = (agentview_rgb, eye_in_hand_rgb, task_emb)
+                else:
+                    state = (each_agentview_rgb, None, task_emb)
                 action = agent.predict(state)[0]
                 all_actions = np.vstack([all_actions, action])
             all_actions = all_actions[1:, :]
