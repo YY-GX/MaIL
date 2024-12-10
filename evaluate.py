@@ -108,7 +108,7 @@ def eval(cfg, task_embs, task_idx, agent, seed, is_osm, mapping, task_suite):
             for idx, each_agentview_rgb in enumerate(agentview_rgb):
                 if is_use_hand:
                     eye_in_hand_rgb = wristview_rgb[idx]
-                    state = (agentview_rgb, eye_in_hand_rgb, task_emb)
+                    state = (each_agentview_rgb, eye_in_hand_rgb, task_emb)
                 else:
                     state = (each_agentview_rgb, None, task_emb)
                 action = agent.predict(state)[0]
