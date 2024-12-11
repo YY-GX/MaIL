@@ -1,7 +1,7 @@
 python run_benchmark_separate.py  --config-name=benchmark_libero_separate \
             --multirun agents=goal_ddpm_mamba_encdec_separate \
             agent_name=ddpm_mamba_cross \
-            folder_name=separate_with_hand_500_epoch_ckpts \
+            folder_name=separate_with_hand_1000_epoch_ckpts \
             epoch=1000 \
             is_bl3_all=False \
             task_order_index=0 \
