@@ -186,6 +186,8 @@ def main() -> None:
         # Load checkpoints
         if is_multitask:
             agent.load_pretrained_model(args.model_folder_path, f"last_ddpm.pth")
+            if not args.is_osm:
+                mapping = None
         else:
             if args.is_osm:
                 agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{model_index}.pth")
