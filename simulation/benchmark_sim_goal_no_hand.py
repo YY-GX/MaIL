@@ -37,7 +37,6 @@ def process_image_input(img_tensor):
 # aug = iaa.arithmetic.ReplaceElementwise(iap.FromLowerResolution(iap.Binomial(0.02), size_px=8),
 #                                         [255])
 
-
 class MultiTaskSim(BaseSim):
     def __init__(self,
                  num_episode,
