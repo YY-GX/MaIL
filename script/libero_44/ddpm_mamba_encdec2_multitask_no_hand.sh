@@ -1,7 +1,8 @@
 python run_benchmark.py  --config-name=benchmark_libero_goal_no_hand \
-            --multirun agents=goal_ddpm_mamba_encdec \
+            --multirun agents=goal_ddpm_mamba_encdec_multitask_no_hand \
             agent_name=ddpm_mamba_cross \
             task_suite=libero_90 \
+            epoch=50 \
             group=libero_90_ddpm_mamba_cross_goal \
             obs_seq=5 \
             train_batch_size=128 \

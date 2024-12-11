@@ -187,7 +187,8 @@ train_action_seq: 5
 inference_action_seq: ${train_action_seq}
 
 trainset:
-  _target_: dataset.multi_task_dataset_goal.MultiTaskDataset
+#  _target_: dataset.multi_task_dataset_goal.MultiTaskDataset
+  _target_: dataset.multi_task_dataset_goal_no_hand.MultiTaskDataset
   data_directory: ${dataset_path}
   task_suite: ${task_suite}
   obs_keys: ${obs_keys}
@@ -204,7 +205,8 @@ trainset:
   aug_factor: ${aug_factor}
   num_data: ${num_data}
 valset:
-  _target_: dataset.multi_task_dataset_goal.MultiTaskDataset
+#  _target_: dataset.multi_task_dataset_goal.MultiTaskDataset
+  _target_: dataset.multi_task_dataset_goal_no_hand.MultiTaskDataset
   data_directory: ${dataset_path}
   task_suite: ${task_suite}
   obs_keys: ${obs_keys}
@@ -222,10 +224,10 @@ valset:
   num_data: ${num_data}
 
 simulation:
-  _target_: simulation.benchmark_sim_goal.MultiTaskSim
+  _target_: simulation.benchmark_sim_goal_no_hand.MultiTaskSim
   _convert_: all
   task_suite: ${task_suite}
-  use_eye_in_hand: True
+  use_eye_in_hand: False
   seed: ${seed}
   device: ${device}
   render: True
