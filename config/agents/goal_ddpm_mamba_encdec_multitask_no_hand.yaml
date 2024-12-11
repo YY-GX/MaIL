@@ -5,7 +5,7 @@ action_seq_size: ${inference_action_seq}
 obs_seq_len: ${obs_seq}
 
 model:
-  _target_: agents.oc_ddpm_goal_agent.DiffusionPolicy
+  _target_: agents.oc_ddpm_goal_agent_no_hand.DiffusionPolicy
   _recursive_: false
 
   visual_input: True
