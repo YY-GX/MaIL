@@ -71,9 +71,9 @@ model:
         agentview_rgb:
           shape: [3, 128, 128]
           type: rgb
-#        eye_in_hand_rgb:
-#          shape: [3, 128, 128]
-#          type: rgb
+        eye_in_hand_rgb:  # yy: comment this if need to delete hand dim
+          shape: [3, 128, 128]
+          type: rgb
 
     rgb_model:
       _target_: agents.module.vision.get_model.get_resnet
