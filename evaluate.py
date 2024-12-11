@@ -22,7 +22,7 @@ from libero.libero.benchmark import get_benchmark, get_benchmark_dict, task_orde
 log = logging.getLogger(__name__)
 
 is_use_hand = True
-
+is_multitask = True
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
@@ -179,13 +179,19 @@ def main() -> None:
         task_name = benchmark.get_task_names()[task_id]
         print(f">> Task Name: {task_name}")
         OmegaConf.resolve(cfg.agents)
-        agent = hydra.utils.instantiate(cfg.agents, task_idx=task_id)
-        # Load checkpoints
-        if args.is_osm:
-            agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{model_index}.pth")
+        if is_multitask:
+            agent = hydra.utils.instantiate(cfg.agents)
         else:
-            agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{task_id}.pth")
-            mapping = None
+            agent = hydra.utils.instantiate(cfg.agents, task_idx=task_id)
+        # Load checkpoints
+        if is_multitask:
+            agent.load_pretrained_model(args.model_folder_path, f"last_ddpm.pth")
+        else:
+            if args.is_osm:
+                agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{model_index}.pth")
+            else:
+                agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_{task_id}.pth")
+                mapping = None
         # Eval pre-trained agent in Libero simu env
         sr = eval(cfg, task_embs, task_id, agent, seed=args.seed, is_osm=args.is_osm, mapping=mapping, task_suite=args.task_suite)
         print(f">> Success Rate for {task_name}: {sr}")
