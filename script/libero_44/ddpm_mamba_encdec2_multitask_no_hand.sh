@@ -1,10 +1,6 @@
-python run_benchmark_separate.py  --config-name=benchmark_libero_separate \
-            --multirun agents=goal_ddpm_mamba_encdec_separate \
+python run_benchmark.py  --config-name=benchmark_libero_goal_no_hand \
+            --multirun agents=goal_ddpm_mamba_encdec \
             agent_name=ddpm_mamba_cross \
-            folder_name=separate_with_hand_500_epoch_ckpts \
-            epoch=1000 \
-            is_bl3_all=False \
-            task_order_index=0 \
             task_suite=libero_90 \
             group=libero_90_ddpm_mamba_cross_goal \
             obs_seq=5 \

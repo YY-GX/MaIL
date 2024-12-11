@@ -46,7 +46,10 @@ class DiffusionPolicy(nn.Module):
 
         self.model = hydra.utils.instantiate(model).to(device)
 
-        self.linear = nn.Linear(512, 128)  # yy: ori: 256, i modify to 128 to match non-hand img size
+        if is_hand_view:
+            self.linear = nn.Linear(512, 256)
+        else:
+            self.linear = nn.Linear(512, 128)  # yy: ori: 256, i modify to 128 to match non-hand img size
 
     def forward(self, inputs, goal, action=None, if_train=False, if_return_obs=False):
         # encode state and visual inputs
