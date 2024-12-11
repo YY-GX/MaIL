@@ -10,12 +10,12 @@ import multiprocessing as mp
 from .base_sim import BaseSim
 
 
-current_working_directory = os.getcwd()
-os.chdir(os.environ['PYTHONPATH'])
+# current_working_directory = os.getcwd()
+# os.chdir(os.environ['PYTHONPATH'])
 from libero.libero.envs import *
 from libero.libero import benchmark
 from libero.libero.envs import OffScreenRenderEnv
-os.chdir(current_working_directory)
+# os.chdir(current_working_directory)
 
 
 import imgaug.parameters as iap
