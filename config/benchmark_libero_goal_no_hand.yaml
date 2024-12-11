@@ -224,7 +224,7 @@ valset:
   num_data: ${num_data}
 
 simulation:
-  _target_: simulation.benchmark_sim_goal_no_hand.MultiTaskSim
+  _target_: simulation.benchmark_sim_goal.MultiTaskSim
   _convert_: all
   task_suite: ${task_suite}
   use_eye_in_hand: False
