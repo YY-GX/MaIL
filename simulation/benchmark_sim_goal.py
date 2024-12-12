@@ -79,7 +79,7 @@ class MultiTaskSim(BaseSim):
 
         # env_ids = []
 
-        print(contexts)
+        print(f"contexts: {contexts}")
 
         for i, context in enumerate(contexts):
 
@@ -224,7 +224,9 @@ class MultiTaskSim(BaseSim):
             success_rate_npy = success_rate.cpu().numpy()
             np.save(f"{folder}/ori_way_to_eval_succ_list_bm_{task_suite}_seed_{seed}.npy", success_rate_npy)
 
+        print(num_tasks)
         for num in range(num_tasks):
+            print(f"Task {num}: {success_rate[num].item()}")
             log.info(f"Task {num}: {success_rate[num].item()}")
 
             wandb.log({custom_step: num,
