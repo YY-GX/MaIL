@@ -151,7 +151,7 @@ class MultiTaskSim(BaseSim):
 
             env.close()
 
-    def test_agent(self, agent, cpu_set=None, epoch=None):
+    def test_agent(self, agent, cpu_set=None, epoch=None, is_save=False, folder="", task_suite="", seed=10000):
         logging.info("Start testing agent")
 
         self.task_embs = agent.trainset.tasks
@@ -219,6 +219,10 @@ class MultiTaskSim(BaseSim):
         custom_step = f"{epoch}_custom_step"
         wandb.define_metric(custom_step)
         wandb.define_metric(f"{epoch}_tasks_success", step_metric=custom_step)
+
+        if is_save:
+            success_rate_npy = success_rate.cpu().numpy()
+            np.save(f"{folder}/ori_way_to_eval_succ_list_bm_{task_suite}_seed_{seed}.npy", success_rate_npy)
 
         for num in range(num_tasks):
             log.info(f"Task {num}: {success_rate[num].item()}")
