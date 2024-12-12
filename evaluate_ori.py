@@ -61,12 +61,7 @@ def main() -> None:
 
     agent = hydra.utils.instantiate(cfg.agents)
     env_sim = hydra.utils.instantiate(cfg.simulation)
-    job_num = hydra.core.hydra_config.HydraConfig.get().job.num
-    num_cpu = mp.cpu_count()
-    cpu_set = list(range(num_cpu))
-    current_num = int(job_num % 4)
-    assign_cpus = cpu_set[current_num * cfg.n_cores:current_num * cfg.n_cores + cfg.n_cores]
-    env_sim.test_agent(agent, assign_cpus, epoch=888, is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed)
+    env_sim.test_agent(agent, cpu_set=None, epoch=888, is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed)
 
 
 if __name__ == "__main__":
