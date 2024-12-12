@@ -41,6 +41,7 @@ def parse_args():
     return args
 
 
+@hydra.main(config_path="config", config_name="benchmark_libero.yaml")
 def main() -> None:
     args = parse_args()
 
@@ -53,8 +54,9 @@ def main() -> None:
     cfg = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
 
     # cpu things
-    HydraConfig.instance().set_config(cfg)
-    job_num = HydraConfig.get().job.num
+    # HydraConfig.instance().set_config(cfg)
+    # job_num = HydraConfig.get().job.num
+    job_num = hydra.core.hydra_config.HydraConfig.get().job.num
     num_cpu = mp.cpu_count()
     cpu_set = list(range(num_cpu))
     current_num = int(job_num % 4)
