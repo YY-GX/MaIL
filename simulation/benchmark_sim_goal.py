@@ -161,8 +161,9 @@ class MultiTaskSim(BaseSim):
             cpu_set = [i for i in range(num_cpu)]
         else:
             num_cpu = len(cpu_set)
+            print(f"cpu_set: {cpu_set}")
 
-        print("there is {} cpus".format(num_cpu))
+        print("There is {} cpus".format(num_cpu))
 
         if self.task_suite == "libero_90":
             num_tasks = 90

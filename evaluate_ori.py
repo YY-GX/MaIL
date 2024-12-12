@@ -18,6 +18,7 @@ from libero.libero.envs import *
 from libero.libero.envs import OffScreenRenderEnv
 from libero.libero.benchmark import get_benchmark, get_benchmark_dict, task_orders, find_keys_by_value
 import multiprocessing as mp
+from hydra.core.hydra_config import HydraConfig
 # os.chdir(current_working_directory)
 
 log = logging.getLogger(__name__)
@@ -51,6 +52,14 @@ def main() -> None:
     OmegaConf.register_new_resolver("now", now)
     cfg = OmegaConf.load(f"{args.model_folder_path}/multirun.yaml")
 
+    # cpu things
+    HydraConfig.instance().set_config(cfg)
+    job_num = HydraConfig.get().job.num
+    num_cpu = mp.cpu_count()
+    cpu_set = list(range(num_cpu))
+    current_num = int(job_num % 4)
+    assign_cpus = cpu_set[current_num * cfg.n_cores:current_num * cfg.n_cores + cfg.n_cores]
+
     wandb.init(
         project=cfg.wandb.project,
         entity=cfg.wandb.entity,
@@ -62,7 +71,8 @@ def main() -> None:
     agent = hydra.utils.instantiate(cfg.agents)
     agent.load_pretrained_model(args.model_folder_path, f"last_ddpm.pth")
     env_sim = hydra.utils.instantiate(cfg.simulation)
-    env_sim.test_agent(agent, cpu_set=None, epoch=888, is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed)
+    env_sim.test_agent(agent, cpu_set=assign_cpus, epoch=888,
+                       is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed)
 
 
 if __name__ == "__main__":
