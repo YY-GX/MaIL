@@ -8,7 +8,7 @@ import wandb
 import robosuite
 import multiprocessing as mp
 from .base_sim import BaseSim
-import json
+
 
 # current_working_directory = os.getcwd()
 # os.chdir(os.environ['PYTHONPATH'])
@@ -21,7 +21,7 @@ from libero.libero.benchmark import get_benchmark, get_benchmark_dict, task_orde
 
 import imgaug.parameters as iap
 from imgaug import augmenters as iaa
-
+import json
 
 log = logging.getLogger(__name__)
 
