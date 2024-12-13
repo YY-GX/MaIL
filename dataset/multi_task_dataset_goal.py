@@ -137,6 +137,8 @@ class MultiTaskDataset(TrajectoryDataset):
 
             # get the image's basic shape from demo_0
             if self.obs_keys == "rgb":
+                if "demo_0" not in f["data"].keys():
+                    continue
                 H, W, C = f["data"]["demo_0"]["obs"][self.obs_modalities[0]].shape[1:]
 
             # determinate which demo should be loaded using demo_keys_list
