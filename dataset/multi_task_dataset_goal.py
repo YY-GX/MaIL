@@ -86,7 +86,7 @@ class MultiTaskDataset(TrajectoryDataset):
             self.data_dir = [
                 os.path.join(data_directory, file)
                 for file in os.listdir(data_directory)
-                if file.endswith(".hdf5") and task_name in file
+                if file.endswith(".hdf5")
             ]
         else:
             self.data_dir = [os.path.join(data_directory, file)
