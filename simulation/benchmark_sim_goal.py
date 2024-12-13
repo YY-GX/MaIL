@@ -15,6 +15,7 @@ from .base_sim import BaseSim
 from libero.libero.envs import *
 from libero.libero import benchmark
 from libero.libero.envs import OffScreenRenderEnv
+from libero.libero.benchmark import get_benchmark, get_benchmark_dict, task_orders, find_keys_by_value
 # os.chdir(current_working_directory)
 
 
@@ -73,7 +74,7 @@ class MultiTaskSim(BaseSim):
 
         self.success_rate = 0
 
-    def eval_agent(self, agent, contexts, context_ind, success, pid, cpu_set):
+    def eval_agent(self, agent, contexts, context_ind, success, pid, cpu_set, is_osm=False):
         print(os.getpid(), cpu_set)
         assign_process_to_cpu(os.getpid(), cpu_set)
 
@@ -92,7 +93,16 @@ class MultiTaskSim(BaseSim):
 
             file_name = os.path.basename(task_bddl_file).split('.')[0]
 
-            task_emb = self.task_embs[file_name]
+            if is_osm:
+                # TODO
+                mapping_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/mappings"
+                mapping_pth = f"{mapping_dir}/{self.task_suite}.json"
+                with open(mapping_pth, 'r') as json_file:
+                    mapping = json.load(json_file)
+                task_ori = find_keys_by_value(mapping, file_name + ".bddl")[0]
+                task_emb = task_embs[task_ori]
+            else:
+                task_emb = self.task_embs[file_name]
 
             # goal_images = self.goal_dicts[file_name]
             # goal_image = random.choice(goal_images)
@@ -151,7 +161,8 @@ class MultiTaskSim(BaseSim):
 
             env.close()
 
-    def test_agent(self, agent, cpu_set=None, epoch=None, is_save=False, folder="", task_suite="", seed=10000):
+    def test_agent(self, agent, cpu_set=None, epoch=None, is_save=False, folder="", task_suite="", seed=10000, is_osm=False):
+        self.is_osm = is_osm
         logging.info("Start testing agent")
 
         self.task_embs = agent.trainset.tasks
@@ -165,8 +176,11 @@ class MultiTaskSim(BaseSim):
 
         print("There is {} cpus".format(num_cpu))
 
-        if self.task_suite == "libero_90":
-            num_tasks = 90
+        if (self.task_suite == "libero_90") \
+                or (self.task_suite == "single_step") \
+                or (self.task_suite == "multi_step_2") \
+                or (self.task_suite == "multi_step_3"):
+            num_tasks = 44
         else:
             num_tasks = 10
 
@@ -205,7 +219,8 @@ class MultiTaskSim(BaseSim):
                                 "context_ind": context_ind[ind_workload[i]:ind_workload[i + 1]],
                                 "success": success,
                                 "pid": i,
-                                "cpu_set": set(cpu_set[i:i + 1])
+                                "cpu_set": set(cpu_set[i:i + 1]),
+                                "is_osm": self.is_osm
                             },
                             )
             p.start()

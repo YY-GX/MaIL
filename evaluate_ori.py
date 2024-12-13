@@ -73,7 +73,7 @@ def main() -> None:
     agent.load_pretrained_model(args.model_folder_path, f"last_ddpm.pth")
     env_sim = hydra.utils.instantiate(cfg.simulation)
     env_sim.test_agent(agent, cpu_set=None, epoch=888,
-                       is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed)
+                       is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed, is_osm=args.is_osm)
 
 
 if __name__ == "__main__":
