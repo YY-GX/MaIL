@@ -38,6 +38,8 @@ def process_image_input(img_tensor):
 # aug = iaa.arithmetic.ReplaceElementwise(iap.FromLowerResolution(iap.Binomial(0.02), size_px=8),
 #                                         [255])
 
+is_use_hand = False
+
 
 class MultiTaskSim(BaseSim):
     def __init__(self,
@@ -142,7 +144,7 @@ class MultiTaskSim(BaseSim):
                 if self.data_aug:
                     agentview_rgb = self.aug(image=agentview_rgb)
 
-                if self.use_eye_in_hand:
+                if is_use_hand:
                     eye_in_hand_rgb = obs["robot0_eye_in_hand_image"]
                     state = (agentview_rgb, eye_in_hand_rgb, task_emb)
                 else:
