@@ -74,7 +74,7 @@ class MultiTaskSim(BaseSim):
 
         self.success_rate = 0
 
-    def eval_agent(self, agent, contexts, context_ind, success, pid, cpu_set, is_osm=False):
+    def eval_agent(self, agent, contexts, context_ind, success, pid, cpu_set, is_osm=False, task_suite_="single_step"):
         print(os.getpid(), cpu_set)
         assign_process_to_cpu(os.getpid(), cpu_set)
 
@@ -87,7 +87,7 @@ class MultiTaskSim(BaseSim):
             # if context not in env_ids:
             # env_ids.append(context)
 
-            task_suite = benchmark.get_benchmark_dict()[self.task_suite]()
+            task_suite = benchmark.get_benchmark_dict()[task_suite_]()
 
             task_bddl_file = task_suite.get_task_bddl_file_path(context)
 
@@ -96,7 +96,7 @@ class MultiTaskSim(BaseSim):
             if is_osm:
                 # TODO
                 mapping_dir = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/mappings"
-                mapping_pth = f"{mapping_dir}/{self.task_suite}.json"
+                mapping_pth = f"{mapping_dir}/{task_suite_}.json"
                 with open(mapping_pth, 'r') as json_file:
                     mapping = json.load(json_file)
                 task_ori = find_keys_by_value(mapping, file_name + ".bddl")[0]
@@ -178,6 +178,7 @@ class MultiTaskSim(BaseSim):
 
         print("There is {} cpus".format(num_cpu))
 
+        print(f"self.task_suite: {self.task_suite}")
         if (self.task_suite == "libero_90") \
                 or (self.task_suite == "single_step") \
                 or (self.task_suite == "multi_step_2") \
@@ -222,7 +223,8 @@ class MultiTaskSim(BaseSim):
                                 "success": success,
                                 "pid": i,
                                 "cpu_set": set(cpu_set[i:i + 1]),
-                                "is_osm": self.is_osm
+                                "is_osm": self.is_osm,
+                                "task_suite_": self.task_suite
                             },
                             )
             p.start()
