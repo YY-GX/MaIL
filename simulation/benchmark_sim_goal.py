@@ -147,7 +147,7 @@ class MultiTaskSim(BaseSim):
                     eye_in_hand_rgb = obs["robot0_eye_in_hand_image"]
                     state = (agentview_rgb, eye_in_hand_rgb, task_emb)
                 else:
-                    state = (agentview_rgb, task_emb)
+                    state = (agentview_rgb, None, task_emb)
 
                 action = agent.predict(state)[0]
                 obs, r, done, _ = env.step(action)
