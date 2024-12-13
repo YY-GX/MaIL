@@ -38,7 +38,7 @@ observation:
       rgb:
         - agentview_rgb
 # yy: I commented this
-#        - eye_in_hand_rgb
+        - eye_in_hand_rgb
       depth: []
       scan: []
     goal:
