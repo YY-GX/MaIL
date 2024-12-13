@@ -52,7 +52,8 @@ observation:
 # cluster path:
 #dataset_path: /hkfs/work/workspace/scratch/ll6323-david_dataset/data/libero/${task_suite}
 # yy: I modified this
-dataset_path: /mnt/arc/yygx/pkgs_baselines/LIBERO/libero/datasets/${task_suite}
+#dataset_path: /mnt/arc/yygx/pkgs_baselines/LIBERO/libero/datasets/${task_suite}
+dataset_path: /mnt/arc/yygx/pkgs_baselines/LIBERO/libero/datasets/bl3_all
 
 # insert your own wandb here
 wandb:
@@ -163,7 +164,7 @@ train_batch_size: 256
 val_batch_size: 256
 num_workers: 2
 device: 'cuda'
-epoch: 20
+epoch: 50
 eval_every_n_epochs: 50
 scale_data: True
 

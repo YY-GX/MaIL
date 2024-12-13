@@ -12,6 +12,9 @@ import imgaug.parameters as iap
 from imgaug import augmenters as iaa
 
 
+is_bl3_all = True
+
+
 def get_max_data_len(data_directory: os.PathLike):
     if os.path.exists(data_directory):
         data_dir = data_directory
@@ -76,8 +79,18 @@ class MultiTaskDataset(TrajectoryDataset):
         self.obs_keys = obs_keys  # low_dim || rgb
         logging.info("The dataset is {}".format(self.obs_keys))  #show low_dim or rgb
 
-        self.data_dir = [os.path.join(data_directory, file)
-                         for file in os.listdir(data_directory) if file.endswith('.hdf5')]
+
+        if is_bl3_all:
+            data_directory = "/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/datasets/bl3_all/"
+            # Get all .hdf5 files in the directory that include the task_name
+            self.data_dir = [
+                os.path.join(data_directory, file)
+                for file in os.listdir(data_directory)
+                if file.endswith(".hdf5") and task_name in file
+            ]
+        else:
+            self.data_dir = [os.path.join(data_directory, file)
+                             for file in os.listdir(data_directory) if file.endswith('.hdf5')]
         # self.data_dir.sort()
         # if len(self.data_dir) > 20:
         #     self.data_dir = self.data_dir[:30]
@@ -109,7 +122,11 @@ class MultiTaskDataset(TrajectoryDataset):
         # goal_rgbs = []
 
         for data_dir in self.data_dir:
-            filename = os.path.basename(data_dir).split('.')[0][:-5]
+            if is_bl3_all:
+                base_name = os.path.basename(data_dir).split('.')[0]
+                filename = re.sub(r'_\d+_demo$', '', base_name)
+            else:
+                filename = os.path.basename(data_dir).split('.')[0][:-5]
             # task_id = TaskIDMapping[filename]
 
             task_emb = tasks[filename]
