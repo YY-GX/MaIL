@@ -71,6 +71,7 @@ def main() -> None:
 
     agent = hydra.utils.instantiate(cfg.agents)
     agent.load_pretrained_model(args.model_folder_path, f"last_ddpm.pth")
+    cfg.simulation.task_suite = args.task_suite
     env_sim = hydra.utils.instantiate(cfg.simulation)
     env_sim.test_agent(agent, cpu_set=None, epoch=888,
                        is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed, is_osm=args.is_osm)
