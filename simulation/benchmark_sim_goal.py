@@ -100,7 +100,7 @@ class MultiTaskSim(BaseSim):
                 with open(mapping_pth, 'r') as json_file:
                     mapping = json.load(json_file)
                 task_ori = find_keys_by_value(mapping, file_name + ".bddl")[0]
-                task_emb = task_embs[task_ori]
+                task_emb = self.task_embs[task_ori]
             else:
                 task_emb = self.task_embs[file_name]
 
