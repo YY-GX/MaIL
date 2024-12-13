@@ -163,6 +163,8 @@ class MultiTaskSim(BaseSim):
 
     def test_agent(self, agent, cpu_set=None, epoch=None, is_save=False, folder="", task_suite="", seed=10000, is_osm=False):
         self.is_osm = is_osm
+        self.task_suite = task_suite
+        self.seed = seed
         logging.info("Start testing agent")
 
         self.task_embs = agent.trainset.tasks
