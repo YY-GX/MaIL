@@ -196,7 +196,8 @@ class MultiTaskSim(BaseSim):
         ctx = mp.get_context('spawn')
         processes_list = []
 
-        for i in range(self.n_cores):
+        # for i in range(self.n_cores):
+        for i in range(num_cpu):  # yy: I modified this
             p = ctx.Process(target=self.eval_agent,
                             kwargs={
                                 "agent": agent,

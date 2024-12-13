@@ -41,7 +41,6 @@ def parse_args():
     return args
 
 
-@hydra.main(config_path="config", config_name="benchmark_libero.yaml")
 def main() -> None:
     args = parse_args()
 
@@ -56,11 +55,11 @@ def main() -> None:
     # cpu things
     # HydraConfig.instance().set_config(cfg)
     # job_num = HydraConfig.get().job.num
-    job_num = hydra.core.hydra_config.HydraConfig.get().job.num
-    num_cpu = mp.cpu_count()
-    cpu_set = list(range(num_cpu))
-    current_num = int(job_num % 4)
-    assign_cpus = cpu_set[current_num * cfg.n_cores:current_num * cfg.n_cores + cfg.n_cores]
+    # job_num = hydra.core.hydra_config.HydraConfig.get().job.num
+    # num_cpu = mp.cpu_count()
+    # cpu_set = list(range(num_cpu))
+    # current_num = int(job_num % 4)
+    # assign_cpus = cpu_set[current_num * cfg.n_cores:current_num * cfg.n_cores + cfg.n_cores]
 
     wandb.init(
         project=cfg.wandb.project,
@@ -73,7 +72,7 @@ def main() -> None:
     agent = hydra.utils.instantiate(cfg.agents)
     agent.load_pretrained_model(args.model_folder_path, f"last_ddpm.pth")
     env_sim = hydra.utils.instantiate(cfg.simulation)
-    env_sim.test_agent(agent, cpu_set=assign_cpus, epoch=888,
+    env_sim.test_agent(agent, cpu_set=None, epoch=888,
                        is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed)
 
 

@@ -55,7 +55,7 @@ def create_index_mapping(dict_map):
 
 def eval(cfg, task_embs, task_idx, agent, seed, is_osm, mapping, task_suite):
     # data augmentation
-    aug = iaa.arithmetic.ReplaceElementwise(iap.FromLowerResolution(iap.Binomial(cfg.aug_factor), size_px=8),[255])
+    # aug = iaa.arithmetic.ReplaceElementwise(iap.FromLowerResolution(iap.Binomial(cfg.aug_factor), size_px=8),[255])
 
     task_suite = get_benchmark_dict()[task_suite]()
     task_bddl_file = task_suite.get_task_bddl_file_path(task_idx)
@@ -101,8 +101,8 @@ def eval(cfg, task_embs, task_idx, agent, seed, is_osm, mapping, task_suite):
             if is_use_hand:
                 wristview_rgb = [each_obs["robot0_eye_in_hand_image"] for each_obs in obs]
 
-            if cfg.data_aug:
-                agentview_rgb = [aug(image=rgb) for rgb in agentview_rgb]
+            # if cfg.data_aug:
+            #     agentview_rgb = [aug(image=rgb) for rgb in agentview_rgb]
 
             all_actions = np.zeros(7)
             for idx, each_agentview_rgb in enumerate(agentview_rgb):
