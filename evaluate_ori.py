@@ -31,6 +31,7 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=10000)
     parser.add_argument("--is_osm", type=int, default=0, choices=[0, 1])
     parser.add_argument("--task_order_index", type=int, default=0)
+    parser.add_argument("--is_use_hand", type=int, default=1)
     parser.add_argument("--task_suite", type=str, default="libero_90")
     parser.add_argument("--model_folder_path", type=str,
                         default="/mnt/arc/yygx/pkgs_baselines/MaIL/checkpoints/separate_no_hand_ckpts/")
@@ -74,7 +75,7 @@ def main() -> None:
     cfg.simulation.task_suite = args.task_suite
     env_sim = hydra.utils.instantiate(cfg.simulation)
     env_sim.test_agent(agent, cpu_set=None, epoch=888,
-                       is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed, is_osm=args.is_osm)
+                       is_save=True, folder=args.model_folder_path, task_suite=args.task_suite, seed=args.seed, is_osm=args.is_osm, is_use_hand=args.is_use_hand)
 
 
 if __name__ == "__main__":

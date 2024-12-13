@@ -38,7 +38,6 @@ def process_image_input(img_tensor):
 # aug = iaa.arithmetic.ReplaceElementwise(iap.FromLowerResolution(iap.Binomial(0.02), size_px=8),
 #                                         [255])
 
-is_use_hand = False
 
 
 class MultiTaskSim(BaseSim):
@@ -76,7 +75,7 @@ class MultiTaskSim(BaseSim):
 
         self.success_rate = 0
 
-    def eval_agent(self, agent, contexts, context_ind, success, pid, cpu_set, is_osm=False, task_suite_="single_step"):
+    def eval_agent(self, agent, contexts, context_ind, success, pid, cpu_set, is_osm=False, task_suite_="single_step", is_use_hand=True):
         print(os.getpid(), cpu_set)
         assign_process_to_cpu(os.getpid(), cpu_set)
 
@@ -163,7 +162,7 @@ class MultiTaskSim(BaseSim):
 
             env.close()
 
-    def test_agent(self, agent, cpu_set=None, epoch=None, is_save=False, folder="", task_suite="", seed=10000, is_osm=False):
+    def test_agent(self, agent, cpu_set=None, epoch=None, is_save=False, folder="", task_suite="", seed=10000, is_osm=False, is_use_hand=True):
         self.is_osm = is_osm
         self.task_suite = task_suite
         self.seed = seed
@@ -226,7 +225,8 @@ class MultiTaskSim(BaseSim):
                                 "pid": i,
                                 "cpu_set": set(cpu_set[i:i + 1]),
                                 "is_osm": self.is_osm,
-                                "task_suite_": self.task_suite
+                                "task_suite_": self.task_suite,
+                                "is_use_hand": is_use_hand
                             },
                             )
             p.start()
