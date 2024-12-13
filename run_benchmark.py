@@ -58,7 +58,11 @@ def main(cfg: DictConfig) -> None:
 
     for num_epoch in tqdm(range(agent.epoch)):
 
+        print(f"num epoch: {num_epoch}")
+
         agent.train_vision_agent()
+
+        agent.store_model_weights(agent.working_dir, sv_name=agent.last_model_name)
 
         if num_epoch in [0, 39, 49, 59]:
         # if num_epoch in [1, 10, 19]:
