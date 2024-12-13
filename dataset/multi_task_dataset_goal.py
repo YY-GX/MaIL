@@ -10,7 +10,7 @@ from dataset.base_dataset import TrajectoryDataset
 from agents.utils import sim_framework_path
 import imgaug.parameters as iap
 from imgaug import augmenters as iaa
-
+import re
 
 is_bl3_all = True
 
