@@ -25,6 +25,7 @@ log = logging.getLogger(__name__)
 
 is_use_hand = True
 is_multitask = True
+is_debug = True
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
@@ -47,6 +48,7 @@ def main() -> None:
 
     def add_resolver(x, y):
         return x + y
+
     def now(format: str):
         return datetime.now().strftime(format)
     OmegaConf.register_new_resolver("add", add_resolver)
@@ -71,7 +73,11 @@ def main() -> None:
     )
 
     agent = hydra.utils.instantiate(cfg.agents)
-    agent.load_pretrained_model(args.model_folder_path, f"last_ddpm.pth")
+    if not is_debug:
+        agent.load_pretrained_model(args.model_folder_path, f"last_ddpm.pth")
+    else:
+        # TODO
+        agent.load_pretrained_model(args.model_folder_path, f"last_ddpm_task_idx_1.pth")
     cfg.simulation.task_suite = args.task_suite
     env_sim = hydra.utils.instantiate(cfg.simulation)
     env_sim.test_agent(agent, cpu_set=None, epoch=888,

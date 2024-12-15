@@ -185,6 +185,8 @@ class MultiTaskSim(BaseSim):
                 or (self.task_suite == "multi_step_2") \
                 or (self.task_suite == "multi_step_3"):
             num_tasks = 44
+            # TODO
+            num_tasks = 2
         else:
             num_tasks = 10
 
@@ -245,7 +247,9 @@ class MultiTaskSim(BaseSim):
 
         if is_save:
             success_rate_npy = success_rate.cpu().numpy()
-            np.save(f"{folder}/ori_way_to_eval_succ_list_bm_{task_suite}_seed_{seed}.npy", success_rate_npy)
+            # np.save(f"{folder}/ori_way_to_eval_succ_list_bm_{task_suite}_seed_{seed}.npy", success_rate_npy)
+            # TODO
+            np.save(f"{folder}/debug_ori_way_to_eval_succ_list_bm_{task_suite}_seed_{seed}.npy", success_rate_npy)
 
         print(num_tasks)
         for num in range(num_tasks):
