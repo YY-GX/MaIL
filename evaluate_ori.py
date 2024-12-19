@@ -25,7 +25,8 @@ log = logging.getLogger(__name__)
 
 is_use_hand = True
 is_multitask = True
-is_debug = False
+# TODO: change back
+is_debug = True
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
